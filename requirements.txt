@@ -1,5 +1,8 @@
 fastapi
 uvicorn[standard]
-mysqlclient
+PyMySQL
 SQLAlchemy
 python-dotenv
+passlib
+bcrypt
+pydantic[email]

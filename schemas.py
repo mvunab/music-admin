@@ -16,7 +16,7 @@ class Usuario(UsuarioBase):
     creado_en: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True # Cambiado de orm_mode
 
 # Esquemas para Integrantes
 class IntegranteBase(BaseModel):
@@ -30,7 +30,7 @@ class Integrante(IntegranteBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True # Cambiado de orm_mode
 
 # Esquemas para Roles
 class RolBase(BaseModel):
@@ -43,7 +43,7 @@ class Rol(RolBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True # Cambiado de orm_mode
 
 # Esquemas para Pautas
 class PautaBase(BaseModel):
@@ -57,7 +57,7 @@ class Pauta(PautaBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True # Cambiado de orm_mode
 
 # Esquemas para Domingos
 class DomingoBase(BaseModel):
@@ -77,7 +77,7 @@ class Domingo(DomingoBase):
     # asignaciones: List[Asignacion] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True # Cambiado de orm_mode
 
 # Esquemas para Asignaciones
 class AsignacionBase(BaseModel):
@@ -96,4 +96,4 @@ class Asignacion(AsignacionBase):
     # integrante: Integrante
 
     class Config:
-        orm_mode = True
+        from_attributes = True # Cambiado de orm_mode
