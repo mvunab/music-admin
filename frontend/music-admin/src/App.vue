@@ -1,20 +1,34 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+// import HelloWorld from './components/HelloWorld.vue' // Comentamos o eliminamos el HelloWorld si no se usa
+import UserCreateForm from './components/UserCreateForm.vue';
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div id="app">
+    <header>
+      <h1>Gestión de Banda</h1>
+    </header>
+    <main>
+      <UserCreateForm />
+      <!-- <HelloWorld msg="Vite + Vue" /> --> {/* Comentamos o eliminamos el HelloWorld si no se usa */}
+    </main>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
 <style scoped>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 20px;
+}
+
+header h1 {
+  margin-bottom: 30px;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
