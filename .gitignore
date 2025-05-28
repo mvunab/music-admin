@@ -111,11 +111,40 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# VSCode
-.vscode/
+# VSCode - Allow specific workspace config files
+*.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/argv.json
 
 # dotenv
 .env
 
 # macOS
 .DS_Store
+
+# Node.js, Vite, Vue specific
+# Node modules
+node_modules/
+frontend/music-admin/node_modules/
+
+# Log files for Node.js
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Vite build output and cache
+frontend/music-admin/dist/
+frontend/music-admin/.vite/
+frontend/music-admin/.output/
+
+# Frontend development tools cache
+.eslintcache
+.stylelintcache
+.prettiercache
+
+# Additional log directories (optional)
+logs/
