@@ -40,8 +40,15 @@ Este proyecto es una API backend desarrollada con FastAPI para gestionar la info
         ```
 
 3.  **Instalar dependencias:**
+    Navega a la carpeta `backend` y luego instala los requisitos:
     ```bash
+    cd backend
     pip install -r requirements.txt
+    cd .. 
+    ```
+    O, desde la raíz del proyecto:
+    ```bash
+    pip install -r backend/requirements.txt
     ```
 
 4.  **Configurar la base de datos:**
@@ -58,8 +65,15 @@ Este proyecto es una API backend desarrollada con FastAPI para gestionar la info
 
 Para iniciar el servidor de desarrollo FastAPI:
 
+Opción 1: Navega al directorio `backend` y ejecuta:
 ```bash
+cd backend
 uvicorn main:app --reload
+```
+
+Opción 2: Desde el directorio raíz del proyecto (`backend_banda`), ejecuta:
+```bash
+uvicorn backend.main:app --reload
 ```
 
 La API estará disponible en `http://127.0.0.1:8000`.
@@ -73,15 +87,18 @@ La API estará disponible en `http://127.0.0.1:8000`.
 .
 ├── .env                # Variables de entorno (configuración de BD)
 ├── .gitignore          # Archivos ignorados por Git
-├── main.py             # Punto de entrada de la aplicación FastAPI, configuración inicial
-├── database.py         # Configuración de la conexión a la base de datos (SQLAlchemy)
-├── models.py           # Modelos de datos SQLAlchemy (tablas de la BD)
-├── schemas.py          # Esquemas Pydantic para validación y serialización de datos
-├── crud.py             # Funciones CRUD para interactuar con la base de datos
-├── requirements.txt    # Dependencias del proyecto Python
-├── routers/            # Módulo para agrupar los endpoints de la API
-│   ├── __init__.py
-│   └── usuarios.py     # Endpoints relacionados con usuarios (ejemplo)
+├── backend/            # Contiene toda la lógica de la API
+│   ├── main.py         # Punto de entrada de la aplicación FastAPI
+│   ├── database.py     # Configuración de la conexión a la BD
+│   ├── models.py       # Modelos de datos SQLAlchemy
+│   ├── schemas.py      # Esquemas Pydantic
+│   ├── crud.py         # Funciones CRUD
+│   ├── requirements.txt # Dependencias del proyecto Python
+│   ├── routers/        # Módulo para agrupar los endpoints
+│   │   ├── __init__.py
+│   │   └── usuarios.py # Endpoints para usuarios
+│   └── copilot-instructions.md # Instrucciones para Copilot (si aplica)
+├── frontend/           # (Placeholder para futuro frontend)
 └── README.md           # Este archivo
 ```
 
@@ -93,4 +110,3 @@ La API estará disponible en `http://127.0.0.1:8000`.
 *   Implementar pruebas unitarias e de integración.
 *   Mejorar el manejo de errores y validaciones.
 *   Considerar la paginación para endpoints que devuelvan listas grandes.
-```
