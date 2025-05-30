@@ -7,6 +7,7 @@ import models # Importar models directamente
 
 # Importar el router de usuarios
 from routers import usuarios
+from routers import roles # Añadir esta línea
 
 # Crear todas las tablas en la base de datos (si no existen)
 # Esto es útil para el desarrollo. Para producción, podrías usar Alembic.
@@ -33,6 +34,7 @@ app.add_middleware(
 
 # Incluir el router de usuarios
 app.include_router(usuarios.router)
+app.include_router(roles.router, prefix="/roles", tags=["roles"]) # Añadir esta línea
 
 # Aquí es donde incluiremos los routers más adelante
 # from routers import integrantes, ...
