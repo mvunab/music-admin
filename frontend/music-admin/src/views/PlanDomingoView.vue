@@ -4,7 +4,7 @@
     <v-row>
       <v-col>
         <div class="d-flex justify-space-between align-center mb-6">
-          <h1 class="text-h4 font-weight-medium">Planificar Servicio Dominical</h1>
+          <h1 class="text-h4 font-weight-medium">Planificar Domingos</h1>
           <v-btn to="/calendar" variant="text" color="primary" prepend-icon="mdi-arrow-left">
             Volver a Agenda
           </v-btn>
