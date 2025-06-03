@@ -4,6 +4,7 @@ import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import BandCalendarView from '../views/BandCalendarView.vue';
 import PlanDomingoView from '../views/PlanDomingoView.vue'; 
+import RepertorioView from '../views/RepertorioView.vue';
 
 // Simulación de verificación de autenticación
 const isAuthenticated = () => {
@@ -39,6 +40,12 @@ const routes = [
     name: 'PlanDomingo',
     component: PlanDomingoView,
     meta: { title: 'Planificar Domingo', requiresAuth: true } 
+  },
+  {
+    path: '/repertorio',
+    name: 'Repertorio',
+    component: RepertorioView,
+    meta: { title: 'Repertorio de Canciones', requiresAuth: true }
   },
 ];
 
