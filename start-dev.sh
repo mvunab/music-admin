@@ -4,7 +4,7 @@
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 
 echo "Iniciando el servidor backend de FastAPI..."
-osascript -e "tell app \"Terminal\" to do script \"cd '${SCRIPT_DIR}/backend' && echo '🚀 Iniciando FastAPI backend...' && uvicorn main:app --reload\""
+osascript -e "tell app \"Terminal\" to do script \"cd '${SCRIPT_DIR}' && echo '🚀 Iniciando FastAPI backend...' && uvicorn backend.main:app --reload\""
 
 echo "Iniciando el servidor de desarrollo frontend de Vue.js (Vite)..."
 osascript -e "tell app \"Terminal\" to do script \"cd '${SCRIPT_DIR}/frontend/music-admin' && echo '🎨 Iniciando Vue.js frontend...' && npm run dev\""

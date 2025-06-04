@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
-import crud
-import models
-import schemas
-from database import get_db # Asumimos que SessionLocal y engine no se usan directamente aquí
+from .. import crud # Cambiado a importación relativa
+from .. import models # Cambiado a importación relativa
+from .. import schemas # Cambiado a importación relativa
+from ..database import get_db # Cambiado a importación relativa
 
 router = APIRouter(
     prefix="/usuarios",

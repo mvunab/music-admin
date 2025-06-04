@@ -2,12 +2,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware # Importar CORSMiddleware
 
-from database import engine, Base # Importar engine y Base directamente
-import models # Importar models directamente
+from .database import engine, Base # Importar engine y Base directamente
+from . import models # Importar models directamente
 
 # Importar el router de usuarios
-from routers import usuarios
-from routers import roles # Añadir esta línea
+from .routers import usuarios
+from .routers import roles
+from .routers import auth # Añadir esta línea
 
 # Crear todas las tablas en la base de datos (si no existen)
 # Esto es útil para el desarrollo. Para producción, podrías usar Alembic.
@@ -33,8 +34,9 @@ app.add_middleware(
 )
 
 # Incluir el router de usuarios
-app.include_router(usuarios.router)
-app.include_router(roles.router, prefix="/roles", tags=["roles"]) # Añadir esta línea
+app.include_router(usuarios.router, prefix="/usuarios", tags=["usuarios"])
+app.include_router(roles.router, prefix="/roles", tags=["roles"])
+app.include_router(auth.router, prefix="/auth", tags=["autenticación"]) # Añadir esta línea
 
 # Aquí es donde incluiremos los routers más adelante
 # from routers import integrantes, ...

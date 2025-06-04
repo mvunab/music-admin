@@ -1,7 +1,7 @@
 # Funciones para realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) en la base de datos
 from sqlalchemy.orm import Session
-import models  # Cambiado de from . import models
-import schemas # Cambiado de from . import schemas
+from . import models  # Cambiado a importación relativa
+from . import schemas # Cambiado a importación relativa
 from passlib.context import CryptContext # Para hashear contraseñas
 
 # Configuración para hashear contraseñas
@@ -9,6 +9,9 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_password_hash(password):
     return pwd_context.hash(password)
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
 
 # CRUD para Usuarios
 def get_usuario(db: Session, usuario_id: int):

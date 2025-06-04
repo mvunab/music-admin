@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func # Para CURRENT_TIMESTAMP
 from sqlalchemy.dialects import mysql # Importar el dialecto de MySQL
 
-from database import Base
+from .database import Base # Cambiado a importación relativa
 
 class Usuario(Base):
     __tablename__ = "usuarios"

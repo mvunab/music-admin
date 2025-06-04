@@ -13,10 +13,23 @@ class UsuarioCreate(UsuarioBase):
 
 class Usuario(UsuarioBase):
     id: int
-    creado_en: Optional[datetime] = None
+    creado_en: datetime
 
     class Config:
         from_attributes = True # Cambiado de orm_mode
+
+# Esquema para el login
+class UsuarioLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+# Esquema para el token (respuesta del login)
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    email: Optional[str] = None
 
 # Esquemas para Integrantes
 class IntegranteBase(BaseModel):
