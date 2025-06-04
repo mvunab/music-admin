@@ -3,9 +3,8 @@ uvicorn[standard]
 PyMySQL
 SQLAlchemy
 python-dotenv
-passlib[bcrypt]  # Modificado: especifica el extra bcrypt para passlib
-# bcrypt  # Comentado: py-bcrypt es preferido por passlib
-py-bcrypt  # Añadido: la librería que passlib usa con el extra [bcrypt]
+passlib[bcrypt]  # Mantenido: especifica el extra bcrypt para passlib
+bcrypt  # Cambiado: usar bcrypt en lugar de py-bcrypt
 pydantic[email]
 python-jose[pyjwt]
 pydantic-settings
