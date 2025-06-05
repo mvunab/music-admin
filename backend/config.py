@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = DOTENV_PATH
         env_file_encoding = 'utf-8'
-        extra = 'ignore' # Ignorar campos extra en el .env si los hubiera
+        extra = 'ignore' 
 
 def get_settings():
     return Settings()

@@ -8,3 +8,4 @@ bcrypt  # Cambiado: usar bcrypt en lugar de py-bcrypt
 pydantic[email]
 python-jose[pyjwt]
 pydantic-settings
+python-multipart
