@@ -1,64 +1,71 @@
 // src/router/index.js
-import { createRouter, createWebHistory } from 'vue-router';
-import LoginView from '../views/LoginView.vue';
-import RegisterView from '../views/RegisterView.vue';
-import BandCalendarView from '../views/BandCalendarView.vue';
-import PlanDomingoView from '../views/PlanDomingoView.vue'; 
-import RepertorioView from '../views/RepertorioView.vue';
+import { createRouter, createWebHistory } from "vue-router";
+import authService from "../services/authService";
 
-// Simulación de verificación de autenticación
-const isAuthenticated = () => {
-  
-  return !!localStorage.getItem('user-token'); 
-};
+// Importa tus vistas
+import LoginView from "../views/LoginView.vue";
+import RegisterView from "../views/RegisterView.vue";
+import BandCalendarView from "../views/BandCalendarView.vue";
+import PlanDomingoView from "../views/PlanDomingoView.vue";
+import RepertorioView from "../views/RepertorioView.vue";
 
 const routes = [
   {
-    path: '/',
-    name: 'Login',
+    path: "/",
+    name: "Login",
     component: LoginView,
-    meta: { title: 'Iniciar Sesión' }
+    meta: { title: "Iniciar Sesión" },
   },
   {
-    path: '/register',
-    name: 'Register',
+    path: "/register",
+    name: "Register",
     component: RegisterView,
-    meta: { title: 'Crear Cuenta' }
+    meta: { title: "Crear Cuenta" },
   },
   {
-    path: '/calendar',
-    name: 'BandCalendar',
+    path: "/calendar",
+    name: "BandCalendar",
     component: BandCalendarView,
-    meta: { title: 'Calendario de Ensayos', requiresAuth: true }
+    meta: { title: "Agenda de Ensayos", requiresAuth: true },
   },
   {
-    path: '/:pathMatch(.*)*', 
-    redirect: '/' 
-  },
-   {
-    path: '/plan-domingo',
-    name: 'PlanDomingo',
+    path: "/plan-domingo",
+    name: "PlanDomingo",
     component: PlanDomingoView,
-    meta: { title: 'Planificar Domingo', requiresAuth: true } 
+    meta: { title: "Planificar Domingo", requiresAuth: true },
   },
   {
-    path: '/repertorio',
-    name: 'Repertorio',
+    path: "/repertorio",
+    name: "Repertorio",
     component: RepertorioView,
-    meta: { title: 'Repertorio de Canciones', requiresAuth: true }
+    meta: { title: "Repertorio de Canciones", requiresAuth: true },
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    redirect: "/", // Redirige a la página de login
   },
 ];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
+  routes,
 });
 
 router.beforeEach((to, from, next) => {
-  document.title = to.meta.title || 'Gestión de Banda';
+  document.title = to.meta.title || "Gestión de Banda";
 
-  if (to.meta.requiresAuth && !isAuthenticated()) {
-    next({ name: 'Login' });
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+
+  if (requiresAuth && !authService.isAuthenticated()) {
+    // Si la ruta requiere autenticación y el usuario no está autenticado,
+    // redirigir al login, guardando la ruta a la que se intentaba acceder.
+    next({ name: "Login", query: { redirect: to.fullPath } });
+  } else if (
+    (to.name === "Login" || to.name === "Register") &&
+    authService.isAuthenticated()
+  ) {
+    // Si el usuario ya está autenticado e intenta ir a Login o Register, redirigirlo al calendario.
+    next({ name: "BandCalendar" });
   } else {
     next();
   }

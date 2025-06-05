@@ -9,42 +9,18 @@
           </v-card-title>
           <v-card-text>
             <v-form ref="loginFormRef" v-model="isLoginFormValid" @submit.prevent="onSubmitLogin">
-              <v-text-field
-                v-model="loginData.email"
-                label="Correo Electrónico"
-                prepend-inner-icon="mdi-email-outline"
-                type="email"
-                :rules="emailRules"
-                required
-                class="mb-5"
-                variant="outlined" 
-                density="comfortable"
-              ></v-text-field>
+              <v-text-field v-model="loginData.email" label="Correo Electrónico" prepend-inner-icon="mdi-email-outline"
+                type="email" :rules="emailRules" required class="mb-5" variant="outlined"
+                density="comfortable"></v-text-field>
 
-              <v-text-field
-                v-model="loginData.password"
-                label="Contraseña"
-                prepend-inner-icon="mdi-lock-outline"
+              <v-text-field v-model="loginData.password" label="Contraseña" prepend-inner-icon="mdi-lock-outline"
                 :type="showPassword ? 'text' : 'password'"
                 :append-inner-icon="showPassword ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
-                @click:append-inner="showPassword = !showPassword"
-                :rules="passwordRules"
-                required
-                class="mb-5"
-                variant="outlined"
-                density="comfortable"
-              ></v-text-field>
+                @click:append-inner="showPassword = !showPassword" :rules="passwordRules" required class="mb-5"
+                variant="outlined" density="comfortable"></v-text-field>
 
-              <v-btn
-                :loading="loading"
-                :disabled="!isLoginFormValid || loading"
-                type="submit"
-                color="primary"
-                block
-                size="x-large"
-                class="mt-3 py-3"
-                rounded="lg"
-              >
+              <v-btn :loading="loading" :disabled="!isLoginFormValid || loading" type="submit" color="primary" block
+                size="x-large" class="mt-3 py-3" rounded="lg">
                 Ingresar
               </v-btn>
             </v-form>
@@ -58,12 +34,10 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="4000" location="top center">
+    <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="5000" location="top center" rounded="pill">
       {{ snackbar.message }}
       <template v-slot:actions>
-        <v-btn icon @click="snackbar.show = false">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
+        <v-btn icon="mdi-close" variant="text" @click="snackbar.show = false"></v-btn>
       </template>
     </v-snackbar>
   </v-container>
@@ -71,70 +45,76 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
+import authService from '@/services/authService'; // Asegúrate que la ruta sea correcta
 
 const router = useRouter();
+const route = useRoute();
 const loginFormRef = ref(null);
-const isLoginFormValid = ref(null); 
+const isLoginFormValid = ref(null);
 const loading = ref(false);
 const showPassword = ref(false);
+const loginData = ref({ email: '', password: '' });
+const snackbar = ref({ show: false, message: '', color: '' });
 
-const loginData = ref({
-  email: '',
-  password: '',
-});
-
-const snackbar = ref({
-  show: false,
-  message: '',
-  color: '', // Se define en la lógica
-});
-
-const emailRules = [
-  v => !!v || 'El correo es requerido.',
-  v => /.+@.+\..+/.test(v) || 'Debe ser un correo electrónico válido.',
-];
-const passwordRules = [
-  v => !!v || 'La contraseña es requerida.',
-];
+const emailRules = [v => !!v || 'El correo es requerido.', v => /.+@.+\..+/.test(v) || 'El correo debe ser válido.'];
+const passwordRules = [v => !!v || 'La contraseña es requerida.'];
 
 const onSubmitLogin = async () => {
+  if (!loginFormRef.value) return;
   const { valid } = await loginFormRef.value.validate();
 
   if (valid) {
     loading.value = true;
-    console.log('Login data:', loginData.value);
+    try {
+      const response = await authService.login({
+        email: loginData.value.email, // El servicio lo mapea a 'username'
+        password: loginData.value.password,
+      });
 
-    setTimeout(() => { // Simulación de API
-      const loginExitoso = true; // Cambia para probar error
-      if (loginExitoso) {
-        localStorage.setItem('user-token', 'vuetify-fake-token');
-        snackbar.value = { show: true, message: '¡Bienvenido de nuevo!', color: 'success' };
-        router.push('/calendar');
-      } else {
-        snackbar.value = { show: true, message: 'Credenciales incorrectas. Intenta de nuevo.', color: 'error' };
+      // FastAPI con OAuth2PasswordRequestForm devuelve { access_token: "...", token_type: "bearer" }
+      authService.saveToken(response.data.access_token);
+
+      snackbar.value = { show: true, message: '¡Bienvenido de nuevo!', color: 'success' };
+
+      const redirectPath = route.query.redirect || '/calendar'; // O tu ruta por defecto post-login
+      router.push(redirectPath);
+
+    } catch (error) {
+      console.error('Error de login:', error.response ? error.response.data : error.message);
+      let errorMessage = 'Error al iniciar sesión. Intenta de nuevo.';
+      if (error.response && error.response.data && error.response.data.detail) {
+        if (typeof error.response.data.detail === 'string') {
+          errorMessage = error.response.data.detail;
+          // Personalizar mensaje común de FastAPI para OAuth2
+          if (errorMessage.toLowerCase().includes("incorrect username or password") ||
+            errorMessage.toLowerCase().includes("incorrect email or password")) { // Tu CRUD usa email
+            errorMessage = "Correo o contraseña incorrectos.";
+          }
+        } else {
+          errorMessage = "Ocurrió un error inesperado durante el login.";
+        }
+      } else if (error.response && error.response.status === 401) { // Unauthorized
+        errorMessage = "Credenciales no válidas o cuenta no activa.";
       }
+      snackbar.value = { show: true, message: errorMessage, color: 'error' };
+    } finally {
       loading.value = false;
-    }, 1500);
+    }
   } else {
-    snackbar.value = { show: true, message: 'Por favor, revisa los campos.', color: 'warning' };
+    snackbar.value = { show: true, message: 'Por favor, completa todos los campos requeridos.', color: 'warning' };
   }
 };
 
-const goToRegister = () => {
-  router.push('/register');
-};
+const goToRegister = () => { router.push('/register'); };
 </script>
 
 <style scoped>
 .fill-height {
-  min-height: 100vh; 
+  min-height: 100vh;
 }
+
 .auth-bg {
- 
-  background-color: #f0f2f5; 
-}
-.v-card {
-  
+  background-color: #f0f2f5;
 }
 </style>

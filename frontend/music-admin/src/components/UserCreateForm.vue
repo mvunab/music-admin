@@ -16,7 +16,8 @@
       </div>
       <button type="submit">Crear Usuario</button>
     </form>
-    <p v-if="message" :class="{ 'success-message': isSuccess, 'error-message': !isSuccess }" class="message">{{ message }}</p>
+    <p v-if="message" :class="{ 'success-message': isSuccess, 'error-message': !isSuccess }" class="message">{{ message
+      }}</p>
   </div>
 </template>
 
@@ -30,11 +31,11 @@ const password = ref('');
 const message = ref('');
 const isSuccess = ref(false);
 
-// Asegúrate de que esta URL coincida con la URL de tu backend FastAPI
-const API_URL = 'http://127.0.0.1:8000/usuarios/'; // La barra final es importante para el router de FastAPI
+
+const API_URL = 'http://127.0.0.1:8000/usuarios/';
 
 const handleSubmit = async () => {
-  message.value = ''; // Limpiar mensajes anteriores
+  message.value = '';
   isSuccess.value = false;
 
   if (!nombre.value || !email.value || !password.value) {
@@ -50,7 +51,7 @@ const handleSubmit = async () => {
       password: password.value,
     });
 
-    if (response.status === 200 || response.status === 201) { // FastAPI devuelve 200 por defecto en POST exitoso
+    if (response.status === 200 || response.status === 201) {
       message.value = `Usuario "${response.data.nombre}" creado con éxito! ID: ${response.data.id}`;
       isSuccess.value = true;
       // Limpiar el formulario
@@ -58,7 +59,7 @@ const handleSubmit = async () => {
       email.value = '';
       password.value = '';
     } else {
-      // Esto podría no alcanzarse si axios lanza un error para estados no 2xx
+      // Manejo de errores inesperados
       message.value = `Error inesperado: ${response.status} ${response.statusText}`;
       isSuccess.value = false;
     }
@@ -95,7 +96,7 @@ const handleSubmit = async () => {
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .form-group {
