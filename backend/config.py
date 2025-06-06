@@ -1,12 +1,10 @@
 from pydantic_settings import BaseSettings
 from pathlib import Path
 
-# Construir la ruta al directorio raíz del proyecto
 # __file__ es la ruta a config.py
 # .parent es el directorio backend/
-# .parent es el directorio raíz del proyecto /Users/matiasvargasmarin/Desktop/backend_banda/
-PROJECT_ROOT_DIR = Path(__file__).resolve().parent.parent
-DOTENV_PATH = PROJECT_ROOT_DIR / ".env"
+BACKEND_DIR = Path(__file__).resolve().parent
+DOTENV_PATH = BACKEND_DIR / ".env" # Apunta a backend/.env
 
 class Settings(BaseSettings):
     DATABASE_URL: str
