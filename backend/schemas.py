@@ -13,7 +13,7 @@ class UsuarioCreate(UsuarioBase):
 
 class Usuario(UsuarioBase):
     id: int
-    creado_en: datetime
+    creado_en: Optional[datetime] = None  # Cambiado para aceptar None
 
     class Config:
         from_attributes = True # Cambiado de orm_mode

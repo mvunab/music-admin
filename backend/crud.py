@@ -3,9 +3,19 @@ from sqlalchemy.orm import Session
 from . import models  # Cambiado a importación relativa
 from . import schemas # Cambiado a importación relativa
 from passlib.context import CryptContext # Para hashear contraseñas
+from datetime import datetime, timezone # Importado para manejar creado_en
+import logging
+
+# Suprimir el warning de passlib/bcrypt
+logging.getLogger("passlib").setLevel(logging.ERROR)
 
 # Configuración para hashear contraseñas
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Especificar versiones para evitar warnings
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto",
+    bcrypt__rounds=12  # Usar un valor explícito para bcrypt rounds
+)
 
 def get_password_hash(password):
     return pwd_context.hash(password)
@@ -25,7 +35,13 @@ def get_usuarios(db: Session, skip: int = 0, limit: int = 100):
 
 def create_usuario(db: Session, usuario: schemas.UsuarioCreate):
     hashed_password = get_password_hash(usuario.password)
-    db_usuario = models.Usuario(email=usuario.email, nombre=usuario.nombre, password_hash=hashed_password)
+    # Crear con fecha y hora actuales explícitamente
+    db_usuario = models.Usuario(
+        email=usuario.email, 
+        nombre=usuario.nombre, 
+        password_hash=hashed_password,
+        creado_en=datetime.now(timezone.utc) # Establecer creado_en explícitamente
+    )
     db.add(db_usuario)
     db.commit()
     db.refresh(db_usuario)

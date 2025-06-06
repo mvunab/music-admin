@@ -5,14 +5,23 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from typing import Optional
+import logging
 
 from .. import crud, schemas
 from ..database import get_db
 from ..config import settings
 
+# Suprimir el warning de passlib/bcrypt
+logging.getLogger("passlib").setLevel(logging.ERROR)
+
 router = APIRouter()
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Usar la misma configuración que en crud.py
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto",
+    bcrypt__rounds=12  # Usar un valor explícito para bcrypt rounds
+)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES

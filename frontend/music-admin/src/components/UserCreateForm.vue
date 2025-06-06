@@ -16,8 +16,16 @@
       </div>
       <button type="submit">Crear Usuario</button>
     </form>
-    <p v-if="message" :class="{ 'success-message': isSuccess, 'error-message': !isSuccess }" class="message">{{ message
-      }}</p>
+    <p v-if="message" :class="{ 'success-message': isSuccess, 'error-message': !isSuccess }" class="message">{{ message }}</p>
+    
+    <!-- Contenedor de la animación de éxito -->
+    <div v-if="showSuccessAnimation" class="success-animation-container">
+      <div class="success-animation">
+        <div class="checkmark-circle">
+          <div class="checkmark draw"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -30,13 +38,14 @@ const email = ref('');
 const password = ref('');
 const message = ref('');
 const isSuccess = ref(false);
-
+const showSuccessAnimation = ref(false);
 
 const API_URL = 'http://127.0.0.1:8000/usuarios/';
 
 const handleSubmit = async () => {
   message.value = '';
   isSuccess.value = false;
+  showSuccessAnimation.value = false;
 
   if (!nombre.value || !email.value || !password.value) {
     message.value = 'Por favor, completa todos los campos.';
@@ -54,6 +63,15 @@ const handleSubmit = async () => {
     if (response.status === 200 || response.status === 201) {
       message.value = `Usuario "${response.data.nombre}" creado con éxito! ID: ${response.data.id}`;
       isSuccess.value = true;
+      
+      // Mostrar la animación de éxito
+      showSuccessAnimation.value = true;
+      
+      // Ocultar la animación después de 3 segundos
+      setTimeout(() => {
+        showSuccessAnimation.value = false;
+      }, 3000);
+      
       // Limpiar el formulario
       nombre.value = '';
       email.value = '';
@@ -97,6 +115,7 @@ const handleSubmit = async () => {
   border: 1px solid #ccc;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative; /* Para posicionar la animación */
 }
 
 .form-group {
@@ -148,5 +167,90 @@ button:hover {
   color: #721c24;
   background-color: #f8d7da;
   border: 1px solid #f5c6cb;
+}
+
+/* Estilos para la animación de éxito */
+.success-animation-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.success-animation {
+  animation: scaleUp 0.5s ease-in-out;
+}
+
+.checkmark-circle {
+  width: 150px;
+  height: 150px;
+  position: relative;
+  display: inline-block;
+  background-color: #4CAF50;
+  border-radius: 50%;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  animation: checkmarkFadeIn 0.5s ease-in-out;
+}
+
+.checkmark {
+  transform: rotate(45deg);
+  height: 75px;
+  width: 35px;
+  display: block;
+  border-right: 10px solid white;
+  border-bottom: 10px solid white;
+  position: absolute;
+  left: 55px;
+  top: 32px;
+}
+
+.draw {
+  animation: drawCheckmark 0.8s ease-in-out forwards;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+
+@keyframes scaleUp {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes checkmarkFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes drawCheckmark {
+  0% {
+    height: 0;
+    width: 0;
+    opacity: 0;
+  }
+  30% {
+    height: 0;
+    width: 35px;
+    opacity: 1;
+  }
+  100% {
+    height: 75px;
+    width: 35px;
+    opacity: 1;
+  }
 }
 </style>
