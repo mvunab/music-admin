@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv() 
 
-MONGO_DETAILS = os.getenv("MONGODB_URI", "mongodb+srv://Admin:80oqPnKymCOsth2u@cluster0.6dv1ca8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+MONGO_DETAILS = os.getenv("MONGODB_URI")
 
 if not MONGO_DETAILS:
     raise ValueError("La variable de entorno MONGODB_URI no está configurada.")
