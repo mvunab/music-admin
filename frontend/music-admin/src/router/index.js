@@ -1,13 +1,14 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
-import authService from "../services/authService";
+import authService from "../services/authService"; 
 
-// Importa tus vistas
+// Importa las vistas que se cargan inicialmente o son muy comunes
 import LoginView from "../views/LoginView.vue";
 import RegisterView from "../views/RegisterView.vue";
-import BandCalendarView from "../views/BandCalendarView.vue";
-import PlanDomingoView from "../views/PlanDomingoView.vue";
-import RepertorioView from "../views/RepertorioView.vue";
+
+const BandCalendarView = () => import("../views/BandCalendarView.vue");
+const PlanDomingoView = () => import("../views/PlanDomingoView.vue");
+const RepertorioView = () => import("../views/RepertorioView.vue");
+const SongSheetView = () => import("../views/SongSheetView.vue"); 
 
 const routes = [
   {
@@ -41,8 +42,15 @@ const routes = [
     meta: { title: "Repertorio de Canciones", requiresAuth: true },
   },
   {
+    path: "/song/:id", 
+    name: "SongSheet",
+    component: SongSheetView,
+    props: true, 
+    meta: { title: "Hoja de Canción", requiresAuth: true },
+  },
+  {
     path: "/:pathMatch(.*)*",
-    redirect: "/", // Redirige a la página de login
+    redirect: "/", 
   },
 ];
 
@@ -55,19 +63,20 @@ router.beforeEach((to, from, next) => {
   document.title = to.meta.title || "Gestión de Banda";
 
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const isAuthenticated = authService.isAuthenticated(); // Llama al método de tu servicio
 
-  if (requiresAuth && !authService.isAuthenticated()) {
+  if (requiresAuth && !isAuthenticated) {
     // Si la ruta requiere autenticación y el usuario no está autenticado,
     // redirigir al login, guardando la ruta a la que se intentaba acceder.
     next({ name: "Login", query: { redirect: to.fullPath } });
   } else if (
     (to.name === "Login" || to.name === "Register") &&
-    authService.isAuthenticated()
+    isAuthenticated
   ) {
     // Si el usuario ya está autenticado e intenta ir a Login o Register, redirigirlo al calendario.
-    next({ name: "BandCalendar" });
+    next({ name: "BandCalendar" }); 
   } else {
-    next();
+    next(); 
   }
 });
 
