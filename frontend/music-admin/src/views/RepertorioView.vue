@@ -2,144 +2,159 @@
   <v-container fluid class="pa-md-6 pa-3">
     <v-row>
       <v-col>
-        <div class="d-flex justify-space-between align-center mb-6">
+        <div class="d-flex justify-space-between align-center mb-6 flex-wrap ga-2">
           <h1 class="text-h4 font-weight-medium">Repertorio de Canciones</h1>
+          <div class="d-flex ga-2 flex-wrap">
+            <v-btn to="/calendar" variant="text" color="primary" prepend-icon="mdi-arrow-left">
+              Volver a Agenda
+            </v-btn>
+          </div>
         </div>
 
-        <v-card rounded="xl">
-          <v-data-table
-            :headers="headers"
-            :items="allSongs"
-            item-value="id" 
-            class="elevation-1"
-            :search="search"
-            :loading="loadingTable"
-            loading-text="Cargando canciones..."
-            no-data-text="No hay canciones en el repertorio. ¡Agrega algunas!"
-            hover
-            hide-default-footer
-          >
-            <template v-slot:top>
-              <v-toolbar flat color="white">
-                <v-toolbar-title class="text-subtitle-1">Lista de Canciones</v-toolbar-title>
-                <v-divider class="mx-4" inset vertical></v-divider>
-                <v-text-field
-                  v-model="search"
-                  density="compact"
-                  label="Buscar canción (título, categoría, etc.)"
-                  prepend-inner-icon="mdi-magnify"
-                  variant="solo-filled"
-                  flat
-                  hide-details
-                  single-line
-                  class="mr-2"
-                ></v-text-field>
-              </v-toolbar>
-            </template>
+        <!-- Desktop Table -->
+        <v-card rounded="xl" v-if="!isMobile">
+          <div class="table-responsive">
+            <v-data-table :headers="headers" :items="allSongs" item-value="id" class="elevation-1" :search="search"
+              :loading="loadingTable" loading-text="Cargando canciones..."
+              no-data-text="No hay canciones en el repertorio. ¡Agrega algunas!" hover hide-default-footer
+              mobile-breakpoint="600">
+              <template v-slot:top>
+                <v-toolbar flat color="white">
+                  <v-toolbar-title class="text-subtitle-1">Lista de Canciones</v-toolbar-title>
+                  <v-divider class="mx-4" inset vertical></v-divider>
+                  <v-text-field v-model="search" density="compact" label="Buscar canción (título, categoría, etc.)"
+                    prepend-inner-icon="mdi-magnify" variant="solo-filled" flat hide-details single-line
+                    class="mr-2"></v-text-field>
+                </v-toolbar>
+              </template>
 
-            <template v-slot:[`item.title`]="{ item }">
-              <router-link v-if="item.id" :to="{ name: 'SongSheet', params: { id: item.id } }" class="song-title-link">
-                {{ item.title }}
-              </router-link>
-              <span v-else>{{ item.title }} <em class="text-caption text-error">(ID no disponible)</em></span>
-            </template>
+              <template v-slot:[`item.title`]="{ item }">
+                <router-link v-if="item.id" :to="{ name: 'SongSheet', params: { id: item.id } }"
+                  class="song-title-link">
+                  {{ item.title }}
+                </router-link>
+                <span v-else>{{ item.title }} <em class="text-caption text-error">(ID no disponible)</em></span>
+              </template>
 
-            <template v-slot:[`item.category`]="{ item }">
-              <v-chip :color="item.category === 'REP' ? 'blue' : 'green'" size="small" label>
-                {{ item.category }}
-              </v-chip>
-            </template>
+              <template v-slot:[`item.category`]="{ item }">
+                <v-chip :color="item.category === 'REP' ? 'blue' : 'green'" size="small" label>
+                  {{ item.category }}
+                </v-chip>
+              </template>
 
-            <template v-slot:[`item.originalTonality`]="{ item }">
-              <span>{{ item.originalTonality || '-' }}</span>
-            </template>
+              <template v-slot:[`item.originalTonality`]="{ item }">
+                <span>{{ item.originalTonality || '-' }}</span>
+              </template>
 
-            <template v-slot:[`item.bpm`]="{ item }">
-              <span>{{ item.bpm || '-' }}</span>
-            </template>
+              <template v-slot:[`item.bpm`]="{ item }">
+                <span>{{ item.bpm || '-' }}</span>
+              </template>
 
-            <template v-slot:[`item.youtubeLink`]="{ item }">
-              <v-btn
-                v-if="item.youtubeLink"
-                icon
-                variant="text"
-                color="red"
-                size="small"
-                :href="item.youtubeLink"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Ver video en YouTube"
-              >
-                <v-icon>mdi-youtube</v-icon>
-              </v-btn>
-              <span v-else>-</span>
-            </template>
+              <template v-slot:[`item.youtubeLink`]="{ item }">
+                <v-btn v-if="item.youtubeLink" icon variant="text" color="red" size="small" :href="item.youtubeLink"
+                  target="_blank" rel="noopener noreferrer" aria-label="Ver video en YouTube">
+                  <v-icon>mdi-youtube</v-icon>
+                </v-btn>
+                <span v-else>-</span>
+              </template>
 
-            <template v-slot:[`item.docsLink`]="{ item }">
-              <v-btn
-                v-if="item.docsLink"
-                icon
-                variant="text"
-                color="blue-darken-2"
-                size="small"
-                :href="item.docsLink"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Ver letra del documento"
-              >
-                <v-icon>mdi-file-document-outline</v-icon>
-              </v-btn>
-              <span v-else>-</span>
-            </template>
+              <template v-slot:[`item.docsLink`]="{ item }">
+                <v-btn v-if="item.docsLink" icon variant="text" color="blue-darken-2" size="small" :href="item.docsLink"
+                  target="_blank" rel="noopener noreferrer" aria-label="Ver letra del documento">
+                  <v-icon>mdi-file-document-outline</v-icon>
+                </v-btn>
+                <span v-else>-</span>
+              </template>
 
-            <template v-slot:[`item.viewChords`]="{ item }">
-              <v-tooltip location="top" text="Ver Letra y Acordes">
-                <template v-slot:activator="{ props: tooltipProps }">
-                  <v-btn
-                    v-if="item.id"
-                    icon
-                    variant="tonal" 
-                    color="primary"   
-                    size="small"
-                    :to="{ name: 'SongSheet', params: { id: item.id } }"
-                    v-bind="tooltipProps"
-                    aria-label="Ver letra y acordes de la canción"
-                  >
-                    <v-icon>mdi-text-box-search-outline</v-icon>
-                  </v-btn>
-                </template>
-              </v-tooltip>
-            </template>
-
-            <template v-slot:[`item.actions`]="{ item }">
-              <v-tooltip location="top" text="Editar Canción">
+              <template v-slot:[`item.viewChords`]="{ item }">
+                <v-tooltip location="top" text="Ver Letra y Acordes">
                   <template v-slot:activator="{ props: tooltipProps }">
-                    <v-btn icon="mdi-pencil-outline" variant="text" color="info" size="small" class="mr-1" @click="editSong(item)" v-bind="tooltipProps"></v-btn>
+                    <v-btn v-if="item.id" icon variant="tonal" color="primary" size="small"
+                      :to="{ name: 'SongSheet', params: { id: item.id } }" v-bind="tooltipProps"
+                      aria-label="Ver letra y acordes de la canción">
+                      <v-icon>mdi-text-box-search-outline</v-icon>
+                    </v-btn>
                   </template>
-              </v-tooltip>
-              <v-tooltip location="top" text="Eliminar Canción">
-                  <template v-slot:activator="{ props: tooltipProps }">
-                    <v-btn icon="mdi-delete-outline" variant="text" color="error" size="small" @click="deleteSongDialog(item)" v-bind="tooltipProps"></v-btn>
-                  </template>
-              </v-tooltip>
-            </template>
+                </v-tooltip>
+              </template>
 
-          </v-data-table>
+              <template v-slot:[`item.actions`]="{ item }">
+                <v-tooltip location="top" text="Editar Canción">
+                  <template v-slot:activator="{ props: tooltipProps }">
+                    <v-btn icon="mdi-pencil-outline" variant="text" color="info" size="small" class="mr-1"
+                      @click="editSong(item)" v-bind="tooltipProps"></v-btn>
+                  </template>
+                </v-tooltip>
+                <v-tooltip location="top" text="Eliminar Canción">
+                  <template v-slot:activator="{ props: tooltipProps }">
+                    <v-btn icon="mdi-delete-outline" variant="text" color="error" size="small"
+                      @click="deleteSongDialog(item)" v-bind="tooltipProps"></v-btn>
+                  </template>
+                </v-tooltip>
+              </template>
+            </v-data-table>
+          </div>
         </v-card>
+
+        <!-- Mobile/Tablet Expansion Panels -->
+        <div v-else>
+          <v-expansion-panels multiple>
+            <v-expansion-panel v-for="song in allSongs" :key="song.id">
+              <v-expansion-panel-title>
+                <div class="d-flex flex-column w-100">
+                  <div class="d-flex justify-space-between align-center">
+                    <span class="font-weight-medium">{{ song.title }}</span>
+                    <span class="text-caption">{{ song.originalTonality || '-' }} | {{ song.bpm || '-' }} BPM</span>
+                  </div>
+                  <div class="text-caption text-grey">{{ song.category }}</div>
+                </div>
+              </v-expansion-panel-title>
+              <v-expansion-panel-text>
+                <div class="d-flex flex-column align-center">
+                  <div class="d-flex ga-4 mb-2 justify-center">
+                    <div v-if="song.youtubeLink" class="d-flex flex-column align-center">
+                      <v-btn icon variant="text" color="red" :href="song.youtubeLink" target="_blank"
+                        aria-label="YouTube">
+                        <v-icon>mdi-youtube</v-icon>
+                      </v-btn>
+                      <span class="text-caption mt-1">YouTube</span>
+                    </div>
+                    <div v-if="song.docsLink" class="d-flex flex-column align-center">
+                      <v-btn icon variant="text" color="blue-darken-2" :href="song.docsLink" target="_blank"
+                        aria-label="Docs">
+                        <v-icon>mdi-file-document-outline</v-icon>
+                      </v-btn>
+                      <span class="text-caption mt-1">Letra (Docs)</span>
+                    </div>
+                    <div v-if="song.id" class="d-flex flex-column align-center">
+                      <v-btn icon variant="tonal" color="primary" :to="{ name: 'SongSheet', params: { id: song.id } }"
+                        aria-label="Letra y acordes">
+                        <v-icon>mdi-text-box-search-outline</v-icon>
+                      </v-btn>
+                      <span class="text-caption mt-1">Letra y Acordes</span>
+                    </div>
+                  </div>
+                  <div class="d-flex ga-4 justify-center mt-2">
+                    <div class="d-flex flex-column align-center">
+                      <v-btn icon="mdi-pencil-outline" variant="text" color="info" @click="editSong(song)"></v-btn>
+                      <span class="text-caption mt-1">Editar</span>
+                    </div>
+                    <div class="d-flex flex-column align-center">
+                      <v-btn icon="mdi-delete-outline" variant="text" color="error"
+                        @click="deleteSongDialog(song)"></v-btn>
+                      <span class="text-caption mt-1">Eliminar</span>
+                    </div>
+                  </div>
+                </div>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </div>
       </v-col>
     </v-row>
 
-    <v-fab
-        icon="mdi-plus"
-        location="bottom end"
-        size="large"
-        color="green-darken-1"
-        app
-        appear
-        class="mb-4 mr-4"
-        @click="openSongDialog()"
-        aria-label="Agregar nueva canción"
-    ></v-fab>
+    <v-fab icon="mdi-plus" location="bottom end" size="large" color="green-darken-1" app appear class="mb-4 mr-4"
+      @click="openSongDialog()" aria-label="Agregar nueva canción"></v-fab>
 
     <v-dialog v-model="songDialog.show" max-width="700px" persistent scrollable>
       <v-card rounded="lg">
@@ -151,25 +166,38 @@
             <v-container>
               <v-row dense>
                 <v-col cols="12">
-                  <v-text-field v-model="currentSong.title" label="Título" :rules="[v => !!v || 'Requerido']" required prepend-inner-icon="mdi-text-short" variant="outlined" density="compact"></v-text-field>
+                  <v-text-field v-model="currentSong.title" label="Título" :rules="[v => !!v || 'Requerido']" required
+                    prepend-inner-icon="mdi-text-short" variant="outlined" density="compact"></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-select v-model="currentSong.category" :items="['REP', 'PROP']" label="Categoría" :rules="[v => !!v || 'Requerido']" required prepend-inner-icon="mdi-tag-outline" variant="outlined" density="compact"></v-select>
+                  <v-select v-model="currentSong.category" :items="['REP', 'PROP']" label="Categoría"
+                    :rules="[v => !!v || 'Requerido']" required prepend-inner-icon="mdi-tag-outline" variant="outlined"
+                    density="compact"></v-select>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-select v-model="currentSong.originalTonality" :items="tonalidadesDisponibles" label="Tono Original" :rules="[v => !!v || 'Requerido']" required prepend-inner-icon="mdi-music-accidental-sharp" variant="outlined" density="compact" clearable></v-select>
+                  <v-select v-model="currentSong.originalTonality" :items="tonalidadesDisponibles" label="Tono Original"
+                    :rules="[v => !!v || 'Requerido']" required prepend-inner-icon="mdi-music-accidental-sharp"
+                    variant="outlined" density="compact" clearable></v-select>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-text-field v-model.number="currentSong.bpm" label="BPM" type="number" prepend-inner-icon="mdi-metronome" variant="outlined" density="compact" clearable></v-text-field>
+                  <v-text-field v-model.number="currentSong.bpm" label="BPM" type="number"
+                    prepend-inner-icon="mdi-metronome" variant="outlined" density="compact" clearable></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-text-field v-model="currentSong.youtubeLink" label="Link YouTube" prepend-inner-icon="mdi-youtube" :rules="[v => !v || /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+$/.test(v) || 'Link inválido']" variant="outlined" density="compact" clearable></v-text-field>
+                  <v-text-field v-model="currentSong.youtubeLink" label="Link YouTube" prepend-inner-icon="mdi-youtube"
+                    :rules="[v => !v || /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+$/.test(v) || 'Link inválido']"
+                    variant="outlined" density="compact" clearable></v-text-field>
                 </v-col>
                 <v-col cols="12">
-                  <v-text-field v-model="currentSong.docsLink" label="Link Letra (Docs)" prepend-inner-icon="mdi-file-document-outline" :rules="[v => !v || /^https?:\/\/.+$/.test(v) || 'Link inválido']" variant="outlined" density="compact" clearable></v-text-field>
+                  <v-text-field v-model="currentSong.docsLink" label="Link Letra (Docs)"
+                    prepend-inner-icon="mdi-file-document-outline"
+                    :rules="[v => !v || /^https?:\/\/.+$/.test(v) || 'Link inválido']" variant="outlined"
+                    density="compact" clearable></v-text-field>
                 </v-col>
                 <v-col cols="12">
-                  <v-textarea v-model="currentSong.lyricsWithChords" label="Letra y Acordes (Tono Original)" placeholder="Ej: [G]Esta es la [C]letra..." prepend-inner-icon="mdi-text-long" variant="outlined" density="compact" rows="8" auto-grow clearable></v-textarea>
+                  <v-textarea v-model="currentSong.lyricsWithChords" label="Letra y Acordes (Tono Original)"
+                    placeholder="Ej: [G]Esta es la [C]letra..." prepend-inner-icon="mdi-text-long" variant="outlined"
+                    density="compact" rows="8" auto-grow clearable></v-textarea>
                 </v-col>
               </v-row>
             </v-container>
@@ -177,7 +205,9 @@
           <v-card-actions class="px-6 pb-4">
             <v-spacer></v-spacer>
             <v-btn variant="text" @click="closeSongDialog">Cancelar</v-btn>
-            <v-btn color="primary" type="submit" :loading="songDialog.loading" :disabled="!isSongFormValid || songDialog.loading">{{ songDialog.isEditMode ? 'Guardar' : 'Agregar' }}</v-btn>
+            <v-btn color="primary" type="submit" :loading="songDialog.loading"
+              :disabled="!isSongFormValid || songDialog.loading">{{ songDialog.isEditMode ? 'Guardar' : 'Agregar'
+              }}</v-btn>
           </v-card-actions>
         </v-form>
       </v-card>
@@ -185,12 +215,14 @@
 
     <v-dialog v-model="confirmDeleteDialog.show" max-width="400px" persistent>
       <v-card rounded="lg">
-        <v-card-title class="text-h5 error--text"><v-icon start color="error">mdi-alert-circle-outline</v-icon>Confirmar</v-card-title>
+        <v-card-title class="text-h5 error--text"><v-icon start
+            color="error">mdi-alert-circle-outline</v-icon>Confirmar</v-card-title>
         <v-card-text class="pt-3">¿Eliminar "<strong>{{ confirmDeleteDialog.songTitle }}</strong>"?</v-card-text>
         <v-card-actions class="pa-4">
           <v-spacer></v-spacer>
           <v-btn variant="text" @click="confirmDeleteDialog.show = false">Cancelar</v-btn>
-          <v-btn color="error" variant="flat" @click="confirmDelete" :loading="confirmDeleteDialog.loading">Eliminar</v-btn>
+          <v-btn color="error" variant="flat" @click="confirmDelete"
+            :loading="confirmDeleteDialog.loading">Eliminar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -231,9 +263,9 @@ const headers = ref([
 ]);
 
 const songDialog = ref({ show: false, isEditMode: false, loading: false });
-const defaultSongItem = { 
-    id: null, title: '', category: 'REP', originalTonality: '', 
-    bpm: null, youtubeLink: '', docsLink: '', lyricsWithChords: ''
+const defaultSongItem = {
+  id: null, title: '', category: 'REP', originalTonality: '',
+  bpm: null, youtubeLink: '', docsLink: '', lyricsWithChords: ''
 };
 const currentSong = ref({ ...defaultSongItem });
 
@@ -245,12 +277,12 @@ const tonalidadesDisponibles = ['C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#'
 const fetchSongs = async () => {
   loadingTable.value = true;
   try {
-    const response = await axios.get(API_SONGS_COLLECTION_URL); 
+    const response = await axios.get(API_SONGS_COLLECTION_URL);
     if (response && response.data && Array.isArray(response.data)) {
-        allSongs.value = response.data; 
+      allSongs.value = response.data;
     } else {
-        console.error("Respuesta de API para canciones no es un array válido:", response);
-        allSongs.value = [];
+      console.error("Respuesta de API para canciones no es un array válido:", response);
+      allSongs.value = [];
     }
   } catch (error) {
     console.error("Error cargando canciones:", error.response ? error.response.data : error.message);
@@ -264,7 +296,7 @@ const fetchSongs = async () => {
 const openSongDialog = (song = null) => {
   if (song && song.id) {
     songDialog.value.isEditMode = true;
-    currentSong.value = { ...defaultSongItem, ...song }; 
+    currentSong.value = { ...defaultSongItem, ...song };
   } else {
     songDialog.value.isEditMode = false;
     currentSong.value = { ...defaultSongItem };
@@ -283,7 +315,7 @@ const saveSong = async () => {
     return;
   }
   songDialog.value.loading = true;
-  const songDataToSave = { ...currentSong.value }; 
+  const songDataToSave = { ...currentSong.value };
   if (songDataToSave.bpm === '' || songDataToSave.bpm === undefined || isNaN(parseInt(songDataToSave.bpm))) songDataToSave.bpm = null;
   else songDataToSave.bpm = parseInt(songDataToSave.bpm);
   if (songDataToSave.youtubeLink === '') songDataToSave.youtubeLink = null;
@@ -300,37 +332,72 @@ const saveSong = async () => {
       snackbar.value = { show: true, message: 'Canción agregada.', color: 'success' };
     }
     closeSongDialog();
-    await fetchSongs(); 
+    await fetchSongs();
   } catch (error) {
     let errorMsg = `Error al ${songDialog.value.isEditMode ? 'actualizar' : 'agregar'} canción.`;
     if (error.response?.data?.detail) errorMsg = typeof error.response.data.detail === 'string' ? error.response.data.detail : JSON.stringify(error.response.data.detail);
     snackbar.value = { show: true, message: errorMsg, color: 'error' };
   } finally {
-     songDialog.value.loading = false;
+    songDialog.value.loading = false;
   }
 };
 const editSong = (song) => openSongDialog(song);
 const deleteSongDialog = (song) => { confirmDeleteDialog.value = { show: true, songId: song.id, songTitle: song.title, loading: false }; };
-const confirmDelete = async () => { 
-    if (!confirmDeleteDialog.value.songId) return;
-    confirmDeleteDialog.value.loading = true;
-    try {
-        await axios.delete(`${API_SONGS_ITEM_URL}/${confirmDeleteDialog.value.songId}`);
-        snackbar.value = { show: true, message: 'Canción eliminada.', color: 'success' };
-        await fetchSongs();
-    } catch (error) {
-        snackbar.value = { show: true, message: 'Error al eliminar.', color: 'error' };
-    } finally {
-        confirmDeleteDialog.value.show = false;
-        confirmDeleteDialog.value.loading = false;
-    }
+const confirmDelete = async () => {
+  if (!confirmDeleteDialog.value.songId) return;
+  confirmDeleteDialog.value.loading = true;
+  try {
+    await axios.delete(`${API_SONGS_ITEM_URL}/${confirmDeleteDialog.value.songId}`);
+    snackbar.value = { show: true, message: 'Canción eliminada.', color: 'success' };
+    await fetchSongs();
+  } catch (error) {
+    snackbar.value = { show: true, message: 'Error al eliminar.', color: 'error' };
+  } finally {
+    confirmDeleteDialog.value.show = false;
+    confirmDeleteDialog.value.loading = false;
+  }
 };
-onMounted(fetchSongs);
+
+// Responsive: Detect if mobile/tablet
+const isMobile = ref(false);
+const checkMobile = () => {
+  isMobile.value = window.innerWidth <= 600;
+};
+onMounted(() => {
+  fetchSongs();
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
+});
 </script>
 
 <style scoped>
 .v-fab {}
-.v-data-table { margin-bottom: 80px; }
-.song-title-link { color: var(--v-theme-on-surface); text-decoration: none; font-weight: 500; }
-.song-title-link:hover { color: var(--v-theme-primary); text-decoration: underline; }
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.v-data-table {
+  margin-bottom: 80px;
+  min-width: 600px;
+}
+
+@media (max-width: 600px) {
+  .v-data-table {
+    min-width: 100%;
+    font-size: 13px;
+  }
+}
+
+.song-title-link {
+  color: var(--v-theme-on-surface);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.song-title-link:hover {
+  color: var(--v-theme-primary);
+  text-decoration: underline;
+}
 </style>

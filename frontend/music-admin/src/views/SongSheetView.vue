@@ -2,7 +2,7 @@
 <template>
   <v-container class="pa-md-6 pa-3">
     <div v-if="loadingSong" class="text-center py-10">
-      <v-progress-circular indeterminate color="primary" size="64"/>
+      <v-progress-circular indeterminate color="primary" size="64" />
       <p class="mt-4">Cargando canción...</p>
     </div>
 
@@ -30,34 +30,31 @@
           </div>
         </v-col>
         <v-col cols="12" md="auto" class="text-md-right mt-3 mt-md-0">
-          <v-btn @click="printSongSheetAdvanced" color="primary" variant="outlined" prepend-icon="mdi-printer-outline">
-            Imprimir PDF
-          </v-btn>
-          <v-btn v-if="song.youtubeLink" icon color="red" :href="song.youtubeLink" target="_blank" rel="noopener">
-            <v-icon>mdi-youtube</v-icon>
-          </v-btn>
-          <v-btn v-if="song.docsLink" icon color="blue-darken-2" :href="song.docsLink" target="_blank" rel="noopener">
-            <v-icon>mdi-file-document-outline</v-icon>
-          </v-btn>
+          <div class="d-flex ga-3 flex-wrap">
+            <v-btn icon color="primary" @click="printSongSheetAdvanced" aria-label="Imprimir">
+              <v-icon>mdi-printer-outline</v-icon>
+            </v-btn>
+            <v-btn v-if="song.youtubeLink" icon color="red" :href="song.youtubeLink" target="_blank" rel="noopener"
+              aria-label="YouTube">
+              <v-icon>mdi-youtube</v-icon>
+            </v-btn>
+            <v-btn v-if="song.docsLink" icon color="blue-darken-2" :href="song.docsLink" target="_blank" rel="noopener"
+              aria-label="Documento">
+              <v-icon>mdi-file-document-outline</v-icon>
+            </v-btn>
+          </div>
         </v-col>
       </v-row>
 
-      <v-divider class="my-4"/>
+      <v-divider class="my-4" />
       <v-row align="center" class="mb-4" dense>
         <v-col cols="12" sm="auto"><span class="text-subtitle-1 mr-2">Tono Actual:</span></v-col>
         <v-col cols="12" sm="4" md="3" lg="2">
-          <v-select
-            v-model="currentDisplayTonality"
-            :items="tonalidadesDisponiblesParaSelector"
-            label="Seleccionar Tono"
-            density="compact"
-            variant="outlined"
-            hide-details
-            class="tonality-select"
-          />
+          <v-select v-model="currentDisplayTonality" :items="tonalidadesDisponiblesParaSelector"
+            label="Seleccionar Tono" density="compact" variant="outlined" hide-details class="tonality-select" />
         </v-col>
-        <v-col cols="auto"><v-btn icon="mdi-minus" @click="transposeStep(-1)" size="small"/></v-col>
-        <v-col cols="auto"><v-btn icon="mdi-plus" @click="transposeStep(1)" size="small"/></v-col>
+        <v-col cols="auto"><v-btn icon="mdi-minus" @click="transposeStep(-1)" size="small" /></v-col>
+        <v-col cols="auto"><v-btn icon="mdi-plus" @click="transposeStep(1)" size="small" /></v-col>
         <v-col cols="auto"><v-btn @click="resetTonality" size="small" variant="text">Original</v-btn></v-col>
       </v-row>
 
@@ -68,9 +65,9 @@
         </div>
         <div class="lyrics-render-area">
           <template v-for="(line, idx) in displayedLyricsWithChords" :key="idx">
-            <div v-if="line.type==='section'" class="section-header-render">{{ line.content }}</div>
-            <div v-else-if="line.type==='chord-line'" class="chords-line-render">{{ line.content }}</div>
-            <div v-else-if="line.type==='lyrics-line'" class="lyrics-line-render">{{ line.content }}</div>
+            <div v-if="line.type === 'section'" class="section-header-render">{{ line.content }}</div>
+            <div v-else-if="line.type === 'chord-line'" class="chords-line-render">{{ line.content }}</div>
+            <div v-else-if="line.type === 'lyrics-line'" class="lyrics-line-render">{{ line.content }}</div>
             <div v-else class="empty-line-render"> </div>
           </template>
         </div>
@@ -103,12 +100,12 @@ const currentDisplayTonality = ref('')
 const API_SONGS_ITEM_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/songs`
 
 const tonalidadesDisponiblesParaSelector = computed(() =>
-  ['C','C#','Db','D','D#','Eb','E','F','F#','Gb','G','G#','Ab','A','A#','Bb'].flatMap(n => [n, n+'m'])
+  ['C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#', 'Ab', 'A', 'A#', 'Bb'].flatMap(n => [n, n + 'm'])
 )
 
 const displayedLyricsWithChords = computed(() => {
   if (!song.value?.lyricsWithChords || !song.value.originalTonality) {
-    return [{ type:'lyrics-line', content:'Cargando letra...' }]
+    return [{ type: 'lyrics-line', content: 'Cargando letra...' }]
   }
   const result = Transposer.transpose(song.value.lyricsWithChords)
     .fromKey(song.value.originalTonality)
@@ -118,17 +115,17 @@ const displayedLyricsWithChords = computed(() => {
   return result.split('\n').map(line => {
     const sec = line.trim().match(/^\[(.+)\]$/)
     if (sec && /^(Verse|Intro|Chorus|Bridge|Estrofa|Coro)/i.test(sec[1])) {
-      return { type:'section', content: sec[1] }
+      return { type: 'section', content: sec[1] }
     }
-    if (line.trim() === '') return { type:'empty-line', content:'' }
+    if (line.trim() === '') return { type: 'empty-line', content: '' }
     if (/^(\s*\[[^\]]+\]\s*)+$/.test(line)) {
-      return { type:'chord-line', content: line.replace(/\[|\]/g, '') }
+      return { type: 'chord-line', content: line.replace(/\[|\]/g, '') }
     }
-    return { type:'lyrics-line', content: line }
+    return { type: 'lyrics-line', content: line }
   })
 })
 
-async function fetchSongDetails(){
+async function fetchSongDetails() {
   loadingSong.value = true
   songError.value = ''
   try {
@@ -153,11 +150,11 @@ function transposeStep(step) {
   currentDisplayTonality.value = trans.key || currentDisplayTonality.value
 }
 
-function resetTonality(){
+function resetTonality() {
   if (song.value) currentDisplayTonality.value = song.value.originalTonality
 }
 
-function goBackToRepertorio(){
+function goBackToRepertorio() {
   router.push({ name: 'Repertorio' })
 }
 
@@ -202,17 +199,65 @@ watch(props, fetchSongDetails, { immediate: true })
 </script>
 
 <style scoped>
-.song-lyrics-container { background:#fff; border:1px solid #e0e0e0; border-radius:4px; }
-.lyrics-render-area { font-family:'Courier New', monospace; font-size:0.95rem; line-height:1.4; color:#333; padding:10px; white-space:pre; }
-.section-header-render { font-weight:bold; margin:1em 0.5em; font-family:Arial; font-size:1.05rem; color:#444; }
-.chords-line-render { color:#D32F2F; font-weight:bold; white-space:pre; letter-spacing:0.01em; }
-.lyrics-line-render { white-space:pre; letter-spacing:0.01em; }
-.empty-line-render { min-height:1.2em; }
+.song-lyrics-container {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+.lyrics-render-area {
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #333;
+  padding: 10px;
+  white-space: pre;
+}
+
+.section-header-render {
+  font-weight: bold;
+  margin: 1em 0.5em;
+  font-family: Arial;
+  font-size: 1.05rem;
+  color: #444;
+}
+
+.chords-line-render {
+  color: #D32F2F;
+  font-weight: bold;
+  white-space: pre;
+  letter-spacing: 0.01em;
+}
+
+.lyrics-line-render {
+  white-space: pre;
+  letter-spacing: 0.01em;
+}
+
+.empty-line-render {
+  min-height: 1.2em;
+}
 
 @media print {
-  .section-header-render { font-weight:bold; font-size:1.1em; }
-  .chords-line-render { color:#000; font-weight:bold; }
-  body, .song-lyrics-container { color:#000; background:#fff; }
-  @page { size:auto; margin:20mm; }
+  .section-header-render {
+    font-weight: bold;
+    font-size: 1.1em;
+  }
+
+  .chords-line-render {
+    color: #000;
+    font-weight: bold;
+  }
+
+  body,
+  .song-lyrics-container {
+    color: #000;
+    background: #fff;
+  }
+
+  @page {
+    size: auto;
+    margin: 20mm;
+  }
 }
 </style>
