@@ -61,15 +61,15 @@ def create_integrante(db: Session, integrante: schemas.IntegranteCreate):
     db.refresh(db_integrante)
     return db_integrante
 
-# CRUD para Roles
-def get_rol(db: Session, rol_id: int):
-    return db.query(models.Rol).filter(models.Rol.id == rol_id).first()
+# CRUD para Roles Musicales
+def get_rol_musical(db: Session, rol_id: int):
+    return db.query(models.RolMusical).filter(models.RolMusical.id == rol_id).first()
 
-def get_roles(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Rol).offset(skip).limit(limit).all()
+def get_roles_musicales(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.RolMusical).offset(skip).limit(limit).all()
 
-def create_rol(db: Session, rol: schemas.RolCreate):
-    db_rol = models.Rol(**rol.model_dump())
+def create_rol_musical(db: Session, rol: schemas.RolMusicalCreate):
+    db_rol = models.RolMusical(**rol.model_dump())
     db.add(db_rol)
     db.commit()
     db.refresh(db_rol)
@@ -116,3 +116,46 @@ def create_asignacion(db: Session, asignacion: schemas.AsignacionCreate):
     db.commit()
     db.refresh(db_asignacion)
     return db_asignacion
+
+# Funciones para gestionar la relación muchos a muchos entre integrantes y roles musicales
+def assign_rol_musical_to_integrante(db: Session, integrante_id: int, rol_musical_id: int):
+    # Verificar que existe el integrante
+    integrante = get_integrante(db, integrante_id=integrante_id)
+    if not integrante:
+        return None
+    
+    # Verificar que existe el rol musical
+    rol_musical = get_rol_musical(db, rol_id=rol_musical_id)
+    if not rol_musical:
+        return None
+    
+    # Verificar si ya existe la asignación para evitar duplicados
+    if rol_musical in integrante.roles_musicales:
+        return integrante
+    
+    # Asignar el rol musical al integrante
+    integrante.roles_musicales.append(rol_musical)
+    db.commit()
+    db.refresh(integrante)
+    return integrante
+
+def remove_rol_musical_from_integrante(db: Session, integrante_id: int, rol_musical_id: int):
+    # Verificar que existe el integrante
+    integrante = get_integrante(db, integrante_id=integrante_id)
+    if not integrante:
+        return None
+    
+    # Verificar que existe el rol musical
+    rol_musical = get_rol_musical(db, rol_id=rol_musical_id)
+    if not rol_musical:
+        return None
+    
+    # Verificar si el rol musical está asignado al integrante
+    if rol_musical not in integrante.roles_musicales:
+        return integrante
+    
+    # Remover el rol musical del integrante
+    integrante.roles_musicales.remove(rol_musical)
+    db.commit()
+    db.refresh(integrante)
+    return integrante
