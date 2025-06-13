@@ -1,12 +1,13 @@
-// src/views/BandCalendarView.vue
 <template>
   <v-container fluid class="pa-md-6 pa-3">
     <v-row>
       <v-col>
+        <!-- Header principal -->
         <div class="d-flex justify-space-between align-center mb-4 flex-wrap ga-2">
-          <h1 class="text-h4 font-weight-medium">Agenda Semanal</h1>
+          <h1 class="text-h5 text-md-h4 font-weight-medium">Agenda Mensual</h1>
 
-          <div class="d-flex ga-2 flex-wrap">
+          <!-- Botones solo en md+ -->
+          <div class="d-none d-md-flex ga-2 flex-wrap">
             <v-btn to="/plan-domingo" color="secondary" variant="outlined" prepend-icon="mdi-calendar-edit">
               Planificar Domingo
             </v-btn>
@@ -17,24 +18,56 @@
               Cerrar Sesión
             </v-btn>
           </div>
+
+          <!-- Hamburguesa en XS/SM -->
+          <div class="d-flex d-md-none">
+            <v-menu offset-y>
+              <template #activator="{ props }">
+                <v-btn icon v-bind="props">
+                  <v-icon>mdi-menu</v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item @click="$router.push('/plan-domingo')">
+                  <v-list-item-title>Planificar Domingo</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="$router.push('/repertorio')">
+                  <v-list-item-title>Repertorio</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="logout">
+                  <v-list-item-title>Cerrar sesión</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </div>
         </div>
 
-        <v-row justify="center" align="center" class="mb-6">
-          <v-btn icon @click="changeMonth(-1)" aria-label="Mes anterior">
-            <v-icon>mdi-chevron-left</v-icon>
-          </v-btn>
-          <span class="text-h5 mx-4">{{ monthYearDisplay(targetMonth) }}</span>
-          <v-btn icon @click="changeMonth(1)" aria-label="Mes siguiente">
-            <v-icon>mdi-chevron-right</v-icon>
-          </v-btn>
-          <v-btn @click="goToCurrentMonth" variant="outlined" class="ml-4" size="small">Mes Actual</v-btn>
+        <!-- Navegación de mes mejorada -->
+        <v-row class="mb-6" justify="center" align="center">
+          <v-col cols="12" class="d-flex align-center justify-center flex-wrap text-center ga-2">
+            <v-btn icon size="small" @click="changeMonth(-1)" class="ma-1" aria-label="Mes anterior">
+              <v-icon>mdi-chevron-left</v-icon>
+            </v-btn>
+
+            <div class="text-subtitle-1 mx-2">
+              {{ monthYearDisplay(targetMonth) }}
+            </div>
+
+            <v-btn icon size="small" @click="changeMonth(1)" class="ma-1" aria-label="Mes siguiente">
+              <v-icon>mdi-chevron-right</v-icon>
+            </v-btn>
+
+            <v-btn class="ml-0 mt-2 mt-sm-0 ml-sm-4" size="small" variant="outlined" @click="goToCurrentMonth">
+              Mes Actual
+            </v-btn>
+          </v-col>
         </v-row>
 
         <div v-if="weeklyEnsayoSlots.length > 0">
           <v-row>
-            <v-col v-for="(slot, index) in weeklyEnsayoSlots" :key="index" cols="12" sm="6" md="4" lg="3">
-              <v-card class="mb-4 fill-height" rounded="lg" elevation="2"
-                :color="slot.sundayEvent.director === '-' ? 'grey-lighten-3' : undefined">
+            <v-col v-for="(slot, index) in weeklyEnsayoSlots" :key="index" cols="12" sm="6" md="4" lg="3" class="pa-2">
+              <v-card class="mb-4 fill-height" rounded="lg" elevation="2" hover
+                :color="slot.sundayEvent.director === '-' ? 'grey-lighten-4' : undefined">
                 <v-card-item class="py-3">
                   <div class="text-h6 font-weight-bold text-center mb-1">
                     DOMINGO {{ slot.sunday.getDate() }}
@@ -45,7 +78,7 @@
                 </v-card-item>
                 <v-divider></v-divider>
 
-                <v-card-text class="py-3">
+                <v-card-text class="py-3 card-scroll">
                   <div class="text-overline mb-1">MÚSICOS:</div>
                   <div v-if="slot.sundayEvent.musicians && slot.sundayEvent.musicians.length > 0">
                     <v-chip v-for="(musician, mIndex) in slot.sundayEvent.musicians" :key="`m-${mIndex}`" size="small"
@@ -59,7 +92,7 @@
                 </v-card-text>
                 <v-divider></v-divider>
 
-                <v-card-text class="py-3">
+                <v-card-text class="py-3 card-scroll">
                   <div class="text-overline mb-1">CORO:</div>
                   <div v-if="slot.sundayEvent.choir && slot.sundayEvent.choir.length > 0">
                     <v-chip v-for="(choirMember, cIndex) in slot.sundayEvent.choir" :key="`c-${cIndex}`" size="small"
@@ -73,13 +106,12 @@
                 </v-card-text>
                 <v-divider></v-divider>
 
-                <v-card-text class="py-3">
+                <v-card-text class="py-3 card-scroll">
                   <div class="text-overline mb-1">ENSAYO:</div>
                   <div class="text-body-1">
                     LUNES {{ slot.mondayBefore.getDate() }}
                     <span class="text-caption text-grey"> ({{ slot.mondayBefore.toLocaleDateString(undefined, {
-                      month:
-                        'short'
+                      month: 'short'
                     }) }})</span>
                   </div>
                   <div v-if="slot.mondayRehearsal" class="mt-1">
@@ -114,7 +146,7 @@
       </v-col>
     </v-row>
 
-    <v-dialog v-model="showDetailsDialog" max-width="500px" scrollable>
+    <v-dialog v-model="showDetailsDialog" max-width="500px" scrollable :fullscreen="$vuetify.display.smAndDown">
       <v-card v-if="selectedSlot" rounded="lg">
         <v-card-title class="text-h6">
           Semana del {{ formatDate(selectedSlot.mondayBefore) }} al {{ formatDate(selectedSlot.sunday) }}
@@ -139,18 +171,22 @@
         </v-card-text>
         <v-card-actions class="pa-4">
           <v-spacer></v-spacer>
-          <v-btn color="primary" variant="text" @click="showDetailsDialog = false">Cerrar</v-btn>
+          <v-btn color="primary" variant="text" @click="showDetailsDialog = false" size="large">Cerrar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-
   </v-container>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import authService from '@/services/authService';
+
+// Simulación de authService.logout()
+const logout = () => {
+  // Aquí puedes poner tu lógica real de logout
+  router.push({ name: 'Login' });
+};
 
 const router = useRouter();
 
@@ -299,11 +335,6 @@ const verDetallesSlot = (slot) => {
   selectedSlot.value = slot;
   showDetailsDialog.value = true;
 };
-
-const logout = () => {
-  authService.logout();
-  router.push({ name: 'Login' });
-};
 </script>
 
 <style scoped>
@@ -333,5 +364,37 @@ const logout = () => {
   color: rgba(0, 0, 0, 0.7);
 }
 
-/* ga-2 es una clase de utilidad de Vuetify para gap: 0.5rem (8px) */
+/* Responsive  */
+.card-scroll {
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+@media (max-width: 600px) {
+  .text-subtitle-1 {
+    font-size: 1rem;
+  }
+
+  .v-btn {
+    min-width: 36px;
+    padding: 4px;
+  }
+
+  .v-card .v-card-text {
+    padding: 12px;
+  }
+
+  .v-chip {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .text-h6 {
+    font-size: 1.1rem;
+  }
+
+  .v-card {
+    margin-bottom: 18px !important;
+  }
+}
 </style>
