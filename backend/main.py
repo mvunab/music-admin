@@ -20,6 +20,10 @@ from .routers import usuarios as usuarios_router
 from .routers import roles as roles_router
 from .routers import auth as auth_router
 from .routers import songs as songs_router 
+from .routers import integrantes as integrantes_router
+from .routers import pautas as pautas_router
+from .routers import domingos as domingos_router
+from .routers import asignaciones as asignaciones_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -55,6 +59,10 @@ app.add_middleware(
 app.include_router(usuarios_router.router, prefix="/api/v1/usuarios", tags=["Usuarios"])
 app.include_router(roles_router.router, prefix="/api/v1/roles", tags=["Roles"])
 app.include_router(auth_router.router, prefix="/api/v1/auth", tags=["Autenticación"])
+app.include_router(integrantes_router.router, prefix="/api/v1/integrantes", tags=["Integrantes"])
+app.include_router(pautas_router.router, prefix="/api/v1/pautas", tags=["Pautas"])
+app.include_router(domingos_router.router, prefix="/api/v1/domingos", tags=["Domingos"])
+app.include_router(asignaciones_router.router, prefix="/api/v1/asignaciones", tags=["Asignaciones"])
 
 # Rutas para la gestión de canciones (MongoDB)
 app.include_router(songs_router.router, prefix="/api/v1/songs", tags=["Canciones"])

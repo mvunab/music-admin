@@ -9,7 +9,7 @@ from ..database import get_db
 
 router = APIRouter(
     # prefix="/usuarios",
-    tags=["usuarios"],
+    tags=["Usuarios"],
     responses={404: {"description": "No encontrado"}},
 )
 

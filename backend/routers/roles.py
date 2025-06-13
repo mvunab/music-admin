@@ -4,17 +4,12 @@ from typing import List
 
 from .. import crud # Cambiado a importación relativa
 from .. import schemas # Cambiado a importación relativa
-from ..database import SessionLocal # Cambiado a importación relativa
+from ..database import get_db # Importamos la función get_db del módulo database
 
-router = APIRouter()
-
-# Dependency to get DB session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+router = APIRouter(
+    tags=["Roles"],
+    responses={404: {"description": "No encontrado"}},
+)
 
 @router.post("/", response_model=schemas.Rol)
 def create_rol_endpoint(rol: schemas.RolCreate, db: Session = Depends(get_db)):
