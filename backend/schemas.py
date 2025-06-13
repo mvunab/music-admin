@@ -1,22 +1,13 @@
 # Definiciones de los esquemas Pydantic para la validación de datos de entrada y salida de la API
 from pydantic import BaseModel, EmailStr
-from typing import Optional, List
+from typing import Optional, List, Any
 from datetime import date, datetime
+from enum import Enum
 
-# Esquemas para Usuarios
-class UsuarioBase(BaseModel):
-    nombre: str
-    email: EmailStr
-
-class UsuarioCreate(UsuarioBase):
-    password: str # La contraseña se enviará en la creación, pero no se devolverá
-
-class Usuario(UsuarioBase):
-    id: int
-    creado_en: Optional[datetime] = None  # Cambiado para aceptar None
-
-    class Config:
-        from_attributes = True # Cambiado de orm_mode
+# Enumeración para roles de usuario en la plataforma
+class RolUsuarioEnum(str, Enum):
+    ADMIN = "admin"
+    REGULAR = "regular"
 
 # Esquema para el login
 class UsuarioLogin(BaseModel):
@@ -31,7 +22,19 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: Optional[str] = None
 
-# Esquemas para Integrantes
+# Esquemas simples para definiciones básicas
+class RolMusicalBase(BaseModel):
+    nombre: str
+
+class RolMusicalCreate(RolMusicalBase):
+    pass
+
+class RolMusicalSimple(RolMusicalBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+
 class IntegranteBase(BaseModel):
     nombre: str
     activo: Optional[bool] = True
@@ -39,26 +42,12 @@ class IntegranteBase(BaseModel):
 class IntegranteCreate(IntegranteBase):
     pass
 
-class Integrante(IntegranteBase):
+class IntegranteSimple(IntegranteBase):
     id: int
 
     class Config:
-        from_attributes = True # Cambiado de orm_mode
+        from_attributes = True
 
-# Esquemas para Roles
-class RolBase(BaseModel):
-    nombre: str
-
-class RolCreate(RolBase):
-    pass
-
-class Rol(RolBase):
-    id: int
-
-    class Config:
-        from_attributes = True # Cambiado de orm_mode
-
-# Esquemas para Pautas
 class PautaBase(BaseModel):
     contenido: Optional[str] = None
     tonalidad: Optional[str] = None
@@ -66,13 +55,12 @@ class PautaBase(BaseModel):
 class PautaCreate(PautaBase):
     pass
 
-class Pauta(PautaBase):
+class PautaSimple(PautaBase):
     id: int
 
     class Config:
-        from_attributes = True # Cambiado de orm_mode
+        from_attributes = True
 
-# Esquemas para Domingos
 class DomingoBase(BaseModel):
     fecha: date
     ensayo_fecha: Optional[date] = None
@@ -82,31 +70,100 @@ class DomingoBase(BaseModel):
 class DomingoCreate(DomingoBase):
     pass
 
-class Domingo(DomingoBase):
+class DomingoSimple(DomingoBase):
     id: int
-    # Podríamos incluir aquí los objetos relacionados si quisiéramos devolverlos
-    # lider: Optional[Integrante] = None
-    # pauta: Optional[Pauta] = None
-    # asignaciones: List[Asignacion] = []
 
     class Config:
-        from_attributes = True # Cambiado de orm_mode
+        from_attributes = True
 
-# Esquemas para Asignaciones
 class AsignacionBase(BaseModel):
     domingo_id: int
-    rol_id: int
+    rol_musical_id: int
     integrante_id: int
 
 class AsignacionCreate(AsignacionBase):
     pass
 
-class Asignacion(AsignacionBase):
+class AsignacionSimple(AsignacionBase):
     id: int
-    # Podríamos incluir aquí los objetos relacionados
-    # domingo: Domingo
-    # rol: Rol
-    # integrante: Integrante
 
     class Config:
-        from_attributes = True # Cambiado de orm_mode
+        from_attributes = True
+
+# Esquemas para Usuarios
+class UsuarioBase(BaseModel):
+    nombre: str
+    email: EmailStr
+    rol_plataforma: Optional[RolUsuarioEnum] = RolUsuarioEnum.REGULAR
+    integrante_id: Optional[int] = None
+
+class UsuarioCreate(UsuarioBase):
+    password: str # La contraseña se enviará en la creación, pero no se devolverá
+
+class Usuario(UsuarioBase):
+    id: int
+    creado_en: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+# Esquemas detallados con relaciones
+class RolMusical(RolMusicalSimple):
+    integrantes: List[IntegranteSimple] = []
+    asignaciones: List["AsignacionSimple"] = []
+
+    class Config:
+        from_attributes = True
+
+class Integrante(IntegranteSimple):
+    roles_musicales: List[RolMusicalSimple] = []
+    asignaciones: List["AsignacionSimple"] = []
+    usuario: Optional["UsuarioSimple"] = None
+
+    class Config:
+        from_attributes = True
+
+class UsuarioSimple(BaseModel):
+    id: int
+    nombre: str
+    email: EmailStr
+    rol_plataforma: RolUsuarioEnum
+
+    class Config:
+        from_attributes = True
+
+class UsuarioDetalle(Usuario):
+    integrante: Optional[IntegranteSimple] = None
+
+    class Config:
+        from_attributes = True
+
+class Pauta(PautaSimple):
+    domingos: List["DomingoSimple"] = []
+
+    class Config:
+        from_attributes = True
+
+class DomingoDetalle(DomingoSimple):
+    lider: Optional[IntegranteSimple] = None
+    pauta: Optional[PautaSimple] = None
+    asignaciones: List["AsignacionSimple"] = []
+
+    class Config:
+        from_attributes = True
+
+class AsignacionDetalle(AsignacionSimple):
+    domingo: Optional[DomingoSimple] = None
+    rol_musical: Optional[RolMusicalSimple] = None
+    integrante: Optional[IntegranteSimple] = None
+
+    class Config:
+        from_attributes = True
+
+# Para resolver referencias circulares
+from typing import ForwardRef
+Integrante.update_forward_refs()
+RolMusical.update_forward_refs()
+Pauta.update_forward_refs()
+DomingoDetalle.update_forward_refs()
+AsignacionDetalle.update_forward_refs()
