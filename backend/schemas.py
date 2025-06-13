@@ -6,8 +6,8 @@ from enum import Enum
 
 # Enumeración para roles de usuario en la plataforma
 class RolUsuarioEnum(str, Enum):
-    ADMIN = "admin"
-    REGULAR = "regular"
+    admin = "admin"
+    regular = "regular"  # Tanto el nombre como el valor en minúsculas para coincidir con la BD
 
 # Esquema para el login
 class UsuarioLogin(BaseModel):
@@ -94,7 +94,7 @@ class AsignacionSimple(AsignacionBase):
 class UsuarioBase(BaseModel):
     nombre: str
     email: EmailStr
-    rol_plataforma: Optional[RolUsuarioEnum] = RolUsuarioEnum.REGULAR
+    rol_plataforma: Optional[RolUsuarioEnum] = RolUsuarioEnum.regular
     integrante_id: Optional[int] = None
 
 class UsuarioCreate(UsuarioBase):

@@ -1,7 +1,7 @@
 # Funciones para realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) en la base de datos
 from sqlalchemy.orm import Session
-from . import models  # Cambiado a importación relativa
-from . import schemas # Cambiado a importación relativa
+from backend import models
+from backend import schemas
 from passlib.context import CryptContext # Para hashear contraseñas
 from datetime import datetime, timezone # Importado para manejar creado_en
 import logging

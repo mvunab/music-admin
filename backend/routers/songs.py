@@ -3,8 +3,8 @@ from fastapi.responses import JSONResponse
 from typing import List, Any 
 from bson import ObjectId
 
-from ..schemas_song import SongCreate, SongUpdate, SongInDB 
-from ..db_mongo import get_song_collection
+from backend.schemas_song import SongCreate, SongUpdate, SongInDB 
+from backend.db_mongo import get_song_collection
 
 router = APIRouter(
     tags=["Canciones"],

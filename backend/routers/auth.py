@@ -7,9 +7,9 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 import logging
 
-from .. import crud, schemas
-from ..database import get_db
-from ..config import settings
+from backend import crud, schemas
+from backend.database import get_db
+from backend.config import settings
 
 # Suprimir el warning de passlib/bcrypt
 logging.getLogger("passlib").setLevel(logging.ERROR)

@@ -3,10 +3,10 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import date
 
-from .. import crud
-from .. import models
-from .. import schemas
-from ..database import get_db
+from backend import crud
+from backend import models
+from backend import schemas
+from backend.database import get_db
 
 router = APIRouter(
     tags=["Domingos"],

@@ -8,22 +8,22 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-from .database import engine as sqlalchemy_engine 
-from . import models as sqlalchemy_models 
+from backend.database import engine as sqlalchemy_engine 
+from backend import models as sqlalchemy_models 
 sqlalchemy_models.Base.metadata.create_all(bind=sqlalchemy_engine) 
 
 # --- Configuración para MongoDB (Canciones) ---
-from .db_mongo import connect_to_mongo, close_mongo_connection
+from backend.db_mongo import connect_to_mongo, close_mongo_connection
 
 # --- Routers ---
-from .routers import usuarios as usuarios_router
-from .routers import roles as roles_router
-from .routers import auth as auth_router
-from .routers import songs as songs_router 
-from .routers import integrantes as integrantes_router
-from .routers import pautas as pautas_router
-from .routers import domingos as domingos_router
-from .routers import asignaciones as asignaciones_router
+from backend.routers import usuarios as usuarios_router
+from backend.routers import roles as roles_router
+from backend.routers import auth as auth_router
+from backend.routers import songs as songs_router 
+from backend.routers import integrantes as integrantes_router
+from backend.routers import pautas as pautas_router
+from backend.routers import domingos as domingos_router
+from backend.routers import asignaciones as asignaciones_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

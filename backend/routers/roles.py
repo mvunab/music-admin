@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
-from .. import crud # Cambiado a importación relativa
-from .. import schemas # Cambiado a importación relativa
-from ..database import get_db # Importamos la función get_db del módulo database
+from backend import crud
+from backend import schemas
+from backend.database import get_db # Importamos la función get_db del módulo database
 
 router = APIRouter(
     tags=["Roles"],

@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 
-from .. import crud
-from .. import schemas
-from ..database import get_db
+from backend import crud
+from backend import schemas
+from backend.database import get_db
 
 router = APIRouter(
     tags=["Integrantes"],

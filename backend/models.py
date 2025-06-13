@@ -4,12 +4,12 @@ from sqlalchemy.sql import func
 from sqlalchemy.dialects import mysql 
 import enum
 
-from .database import Base 
+from backend.database import Base 
 
 # Enumeración para roles de usuario en la plataforma
 class RolUsuario(enum.Enum):
-    ADMIN = "admin"
-    REGULAR = "regular"
+    admin = "admin"
+    regular = "regular"  # Tanto el nombre como el valor en minúsculas para coincidir con la BD
 
 class Usuario(Base):
     __tablename__ = "usuarios"
@@ -20,7 +20,7 @@ class Usuario(Base):
     password_hash = Column(mysql.VARCHAR(255), nullable=False)
     creado_en = Column(DateTime(timezone=True), server_default=func.now())
     # Rol del usuario en la plataforma (admin o regular)
-    rol_plataforma = Column(Enum(RolUsuario), default=RolUsuario.REGULAR)
+    rol_plataforma = Column(Enum(RolUsuario), default=RolUsuario.regular)
     # Relación con integrante (un usuario puede ser un integrante de la banda)
     integrante_id = Column(mysql.INTEGER(unsigned=True), ForeignKey("integrantes.id"), nullable=True)
     integrante = relationship("Integrante", back_populates="usuario")
