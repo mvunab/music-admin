@@ -72,6 +72,14 @@ app.include_router(songs_router.router, prefix="/api/v1/songs", tags=["Canciones
 async def read_root():
     return {"message": "Bienvenido a la API de Gestión de Banda"}
 
+@app.get("/healthcheck", tags=["Health"])
+async def healthcheck():
+    """
+    Endpoint para verificar el estado de salud de la API.
+    Utilizado por Docker para verificar que el servicio esté funcionando.
+    """
+    return {"status": "ok", "service": "backend-api", "version": "0.1.0"}
+
 # Si quieres ejecutar directamente con uvicorn (para desarrollo fácil)
 # if __name__ == "__main__":
 #     import uvicorn
