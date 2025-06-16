@@ -1,4 +1,5 @@
 import axios from "axios";
+import { cerrarSesion, verificarAutenticacion } from '@/utils/authUtils';
 
 const API_DOMAIN = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 const API_V1_PREFIX = "/api/v1"; 
@@ -29,12 +30,9 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Si el token es inválido o expiró, limpiar y redirigir al login
-      localStorage.removeItem("user-token");
-      // Evitar bucles de redirección si ya estamos en login
-      if (window.location.pathname !== '/login' && window.location.pathname !== '/') {
-          window.location.href = '/login?session_expired=true'; 
-      }
+      console.log('Error 401: Token inválido o expirado');
+      // Usar la función centralizada para cerrar sesión
+      cerrarSesion();
     }
     return Promise.reject(error);
   }
@@ -64,7 +62,7 @@ export default {
   },
 
   logout() {
-    localStorage.removeItem("user-token");
+    cerrarSesion();
   },
 
   getToken() {
@@ -76,13 +74,7 @@ export default {
   },
 
   isAuthenticated() {
-    const token = this.getToken();
-    if (!token) {
-      return false;
-    }
-    // TODO: decodificar el JWT aquí y verificar la fecha de expiración (campo 'exp') jwt-decode.
-
-    return true;
+    return verificarAutenticacion();
   },
 
   async getCurrentUser() {

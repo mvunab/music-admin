@@ -48,6 +48,7 @@
 
 <script>
 import authService from '@/services/authService';
+import { cerrarSesion, verificarAutenticacion } from '@/utils/authUtils';
 
 export default {
   name: 'NavigationMenu',
@@ -93,7 +94,7 @@ export default {
   
   methods: {
     async obtenerUsuario() {
-      if (authService.isAuthenticated()) {
+      if (verificarAutenticacion()) {
         try {
           const response = await authService.getCurrentUser();
           this.usuario = response.data;
@@ -104,8 +105,7 @@ export default {
     },
     
     logout() {
-      authService.logout();
-      this.$router.push('/');
+      cerrarSesion();
     }
   }
 };

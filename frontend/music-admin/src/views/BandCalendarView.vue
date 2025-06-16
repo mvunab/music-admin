@@ -42,6 +42,13 @@
           </div>
         </div>
 
+        <!-- Mensaje de bienvenida personalizado -->
+        <div class="text-center my-4">
+          <h2 class="text-h5 font-weight-regular primary--text">
+            ¡Bienvenido {{ nombreUsuario }}!
+          </h2>
+        </div>
+
         <!-- Navegación de mes mejorada -->
         <v-row class="mb-6" justify="center" align="center">
           <v-col cols="12" class="d-flex align-center justify-center flex-wrap text-center ga-2">
@@ -179,13 +186,28 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { cerrarSesion } from '@/utils/authUtils';
+import authService from '@/services/authService';
 
-// Simulación de authService.logout()
+// Variable para almacenar el nombre del usuario
+const nombreUsuario = ref('');
+
+// Cargar información del usuario al iniciar el componente
+onMounted(async () => {
+  try {
+    const response = await authService.getCurrentUser();
+    nombreUsuario.value = response.data.nombre || 'Usuario';
+  } catch (error) {
+    console.error('Error al obtener información del usuario:', error);
+    nombreUsuario.value = 'Usuario';
+  }
+});
+
+// Usar la función centralizada de logout
 const logout = () => {
-  // Aquí puedes poner tu lógica real de logout
-  router.push({ name: 'Login' });
+  cerrarSesion();
 };
 
 const router = useRouter();

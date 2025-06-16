@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import authService from "../services/authService"; 
+import { verificarAutenticacion } from "@/utils/authUtils";
 
 // Importa las vistas que se cargan inicialmente o son muy comunes
 import LoginView from "../views/LoginView.vue";
@@ -62,21 +63,26 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title || "Gestión de Banda";
 
+  // Verificar la autenticación antes de cada navegación
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-  const isAuthenticated = authService.isAuthenticated(); // Llama al método de tu servicio
+  
+  // Usar la función centralizada para verificar autenticación
+  let isAuthenticated = verificarAutenticacion();
+  console.log("Estado de autenticación:", isAuthenticated);
 
   if (requiresAuth && !isAuthenticated) {
-    // Si la ruta requiere autenticación y el usuario no está autenticado,
-    // redirigir al login, guardando la ruta a la que se intentaba acceder.
-    next({ name: "Login", query: { redirect: to.fullPath } });
+    // Si la ruta requiere autenticación y el usuario no está autenticado
+    console.log("Redirigiendo a login: requiere autenticación pero no está autenticado");
+    return next({ name: "Login", query: { redirect: to.fullPath } });
   } else if (
     (to.name === "Login" || to.name === "Register") &&
     isAuthenticated
   ) {
-    // Si el usuario ya está autenticado e intenta ir a Login o Register, redirigirlo al calendario.
-    next({ name: "BandCalendar" }); 
+    // Si el usuario ya está autenticado e intenta ir a Login o Register
+    console.log("Redirigiendo a calendario: ya está autenticado");
+    return next({ name: "BandCalendar" }); 
   } else {
-    next(); 
+    return next(); 
   }
 });
 
