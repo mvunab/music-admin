@@ -95,3 +95,35 @@ export function verificarAutenticacion() {
     return false;
   }
 }
+
+/**
+ * Función para verificar si el usuario tiene privilegios de administrador.
+ * Verifica en el token JWT si el usuario tiene el rol de administrador.
+ * @returns {boolean} - true si el usuario es administrador, false en caso contrario
+ */
+export function verificarAdmin() {
+  try {
+    console.log("AuthUtils: Verificando privilegios de administrador...");
+    
+    // Primero verificar si el usuario está autenticado
+    if (!verificarAutenticacion()) {
+      return false;
+    }
+    
+    const token = localStorage.getItem("user-token");
+    const parts = token.split('.');
+    const payload = JSON.parse(atob(parts[1]));
+    
+    // Verificar si el usuario tiene el campo 'is_admin' establecido como true
+    if (payload.is_admin === true) {
+      console.log('AuthUtils: Usuario tiene privilegios de administrador');
+      return true;
+    }
+    
+    console.log('AuthUtils: Usuario no tiene privilegios de administrador');
+    return false;
+  } catch (error) {
+    console.error('AuthUtils: Error verificando privilegios de administrador:', error);
+    return false;
+  }
+}

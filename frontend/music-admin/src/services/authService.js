@@ -84,4 +84,14 @@ export default {
     // Endpoint: GET /api/v1/auth/users/me/
     return apiClient.get(`${API_V1_PREFIX}/auth/users/me/`);
   },
+  
+  async isAdmin() {
+    try {
+      const response = await this.getCurrentUser();
+      return response.data.rol_plataforma === 'admin';
+    } catch (error) {
+      console.error('Error verificando si el usuario es administrador:', error);
+      return false;
+    }
+  },
 };

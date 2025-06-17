@@ -3,12 +3,12 @@ import { apiClient, API_V1_PREFIX } from "./apiService";
 
 export default {
   // Obtener todos los usuarios
-  async getAll() {
+  async getUsuarios() {
     return apiClient.get(`${API_V1_PREFIX}/usuarios/`);
   },
 
   // Obtener un usuario por ID
-  async getById(id) {
+  async getUsuarioById(id) {
     return apiClient.get(`${API_V1_PREFIX}/usuarios/${id}`);
   },
 
@@ -18,17 +18,17 @@ export default {
   },
 
   // Crear un nuevo usuario
-  async create(usuario) {
+  async createUsuario(usuario) {
     return apiClient.post(`${API_V1_PREFIX}/usuarios/`, usuario);
   },
 
   // Actualizar un usuario existente
-  async update(id, usuario) {
+  async updateUsuario(id, usuario) {
     return apiClient.put(`${API_V1_PREFIX}/usuarios/${id}`, usuario);
   },
 
   // Eliminar un usuario
-  async delete(id) {
+  async deleteUsuario(id) {
     return apiClient.delete(`${API_V1_PREFIX}/usuarios/${id}`);
   },
 

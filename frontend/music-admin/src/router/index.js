@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import authService from "../services/authService"; 
-import { verificarAutenticacion } from "@/utils/authUtils";
+import { verificarAutenticacion, verificarAdmin } from "@/utils/authUtils";
 
 // Importa las vistas que se cargan inicialmente o son muy comunes
 import LoginView from "../views/LoginView.vue";
@@ -10,6 +10,7 @@ const BandCalendarView = () => import("../views/BandCalendarView.vue");
 const PlanDomingoView = () => import("../views/PlanDomingoView.vue");
 const RepertorioView = () => import("../views/RepertorioView.vue");
 const SongSheetView = () => import("../views/SongSheetView.vue"); 
+const AdminView = () => import("../views/AdminView.vue"); 
 
 const routes = [
   {
@@ -50,6 +51,16 @@ const routes = [
     meta: { title: "Hoja de Canción", requiresAuth: true },
   },
   {
+    path: "/admin",
+    name: "Admin",
+    component: AdminView,
+    meta: { 
+      title: "Administración de Usuarios", 
+      requiresAuth: true,
+      requiresAdmin: true 
+    },
+  },
+  {
     path: "/:pathMatch(.*)*",
     redirect: "/", 
   },
@@ -65,15 +76,23 @@ router.beforeEach((to, from, next) => {
 
   // Verificar la autenticación antes de cada navegación
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
   
-  // Usar la función centralizada para verificar autenticación
-  let isAuthenticated = verificarAutenticacion();
+  // Usar las funciones centralizadas para verificar autenticación y privilegios de administrador
+  const isAuthenticated = verificarAutenticacion();
+  const isAdmin = verificarAdmin();
+  
   console.log("Estado de autenticación:", isAuthenticated);
+  console.log("Es administrador:", isAdmin);
 
   if (requiresAuth && !isAuthenticated) {
     // Si la ruta requiere autenticación y el usuario no está autenticado
     console.log("Redirigiendo a login: requiere autenticación pero no está autenticado");
     return next({ name: "Login", query: { redirect: to.fullPath } });
+  } else if (requiresAdmin && !isAdmin) {
+    // Si la ruta requiere privilegios de administrador y el usuario no los tiene
+    console.log("Redirigiendo a calendario: requiere privilegios de administrador");
+    return next({ name: "BandCalendar" });
   } else if (
     (to.name === "Login" || to.name === "Register") &&
     isAuthenticated

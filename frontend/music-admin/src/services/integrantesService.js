@@ -3,27 +3,27 @@ import { apiClient, API_V1_PREFIX } from "./apiService";
 
 export default {
   // Obtener todos los integrantes
-  async getAll() {
+  async getIntegrantes() {
     return apiClient.get(`${API_V1_PREFIX}/integrantes/`);
   },
 
   // Obtener un integrante por ID
-  async getById(id) {
+  async getIntegranteById(id) {
     return apiClient.get(`${API_V1_PREFIX}/integrantes/${id}`);
   },
 
   // Crear un nuevo integrante
-  async create(integrante) {
+  async createIntegrante(integrante) {
     return apiClient.post(`${API_V1_PREFIX}/integrantes/`, integrante);
   },
 
   // Actualizar un integrante existente
-  async update(id, integrante) {
+  async updateIntegrante(id, integrante) {
     return apiClient.put(`${API_V1_PREFIX}/integrantes/${id}`, integrante);
   },
 
   // Eliminar un integrante
-  async delete(id) {
+  async deleteIntegrante(id) {
     return apiClient.delete(`${API_V1_PREFIX}/integrantes/${id}`);
   },
 

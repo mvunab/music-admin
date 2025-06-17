@@ -22,7 +22,7 @@
 
     <v-list density="compact" nav>
       <v-list-item
-        v-for="item in menuItems"
+        v-for="item in filteredMenuItems"
         :key="item.title"
         :to="item.path"
         :prepend-icon="item.icon"
@@ -48,7 +48,7 @@
 
 <script>
 import authService from '@/services/authService';
-import { cerrarSesion, verificarAutenticacion } from '@/utils/authUtils';
+import { cerrarSesion, verificarAutenticacion, verificarAdmin } from '@/utils/authUtils';
 
 export default {
   name: 'NavigationMenu',
@@ -58,6 +58,7 @@ export default {
       drawer: true,
       miniVariant: false,
       usuario: null,
+      isAdmin: false,
       menuItems: [
         {
           title: 'Calendario',
@@ -83,13 +84,30 @@ export default {
           title: 'Roles Musicales',
           path: '/roles-musicales',
           icon: 'mdi-microphone'
+        },
+        {
+          title: 'Administración',
+          path: '/admin',
+          icon: 'mdi-shield-account',
+          requiresAdmin: true
         }
       ]
     };
   },
   
+  computed: {
+    filteredMenuItems() {
+      if (this.isAdmin) {
+        return this.menuItems;
+      } else {
+        return this.menuItems.filter(item => !item.requiresAdmin);
+      }
+    }
+  },
+  
   created() {
     this.obtenerUsuario();
+    this.verificarAdminStatus();
   },
   
   methods: {
@@ -102,6 +120,10 @@ export default {
           console.error('Error al obtener información del usuario', error);
         }
       }
+    },
+    
+    verificarAdminStatus() {
+      this.isAdmin = verificarAdmin();
     },
     
     logout() {
