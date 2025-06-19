@@ -208,6 +208,8 @@ onMounted(async () => {
 // Usar la función centralizada de logout
 const logout = () => {
   cerrarSesion();
+  // Redirigir inmediatamente para una mejor experiencia de usuario
+  router.push('/');
 };
 
 const router = useRouter();

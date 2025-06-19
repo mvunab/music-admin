@@ -49,7 +49,11 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires # Usar user.email para el subject del token
+        data={
+            "sub": user.email,
+            "is_admin": user.rol_plataforma.value == "admin"  # Usar rol_plataforma en lugar de is_admin
+        }, 
+        expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 

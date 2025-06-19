@@ -40,12 +40,34 @@ def create_usuario(db: Session, usuario: schemas.UsuarioCreate):
         email=usuario.email, 
         nombre=usuario.nombre, 
         password_hash=hashed_password,
-        creado_en=datetime.now(timezone.utc) # Establecer creado_en explícitamente
+        creado_en=datetime.now(timezone.utc), # Establecer creado_en explícitamente
+        rol_plataforma=usuario.rol_plataforma
     )
     db.add(db_usuario)
     db.commit()
     db.refresh(db_usuario)
     return db_usuario
+
+def update_usuario(db: Session, usuario_id: int, usuario_update: schemas.UsuarioBase):
+    db_usuario = get_usuario(db, usuario_id)
+    if db_usuario:
+        # Actualizar campos del usuario
+        update_data = usuario_update.model_dump(exclude_unset=True)
+        for key, value in update_data.items():
+            if key != "password":  # No actualizar password directamente
+                setattr(db_usuario, key, value)
+        
+        db.commit()
+        db.refresh(db_usuario)
+    return db_usuario
+
+def delete_usuario(db: Session, usuario_id: int):
+    db_usuario = get_usuario(db, usuario_id)
+    if db_usuario:
+        db.delete(db_usuario)
+        db.commit()
+        return True
+    return False
 
 # CRUD para Integrantes
 def get_integrante(db: Session, integrante_id: int):

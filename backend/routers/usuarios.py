@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -6,6 +6,7 @@ from backend import crud
 from backend import models
 from backend import schemas
 from backend.database import get_db
+from backend.routers.auth import get_current_user
 
 router = APIRouter(
     # prefix="/usuarios",
@@ -31,3 +32,61 @@ def read_usuario(usuario_id: int, db: Session = Depends(get_db)):
     if db_usuario is None:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return db_usuario
+
+@router.put("/{usuario_id}", response_model=schemas.Usuario)
+def update_usuario(
+    usuario_id: int, 
+    usuario_update: schemas.UsuarioBase, 
+    db: Session = Depends(get_db),
+    current_user: schemas.Usuario = Depends(get_current_user)
+):
+    # Verificar si el usuario actual es administrador
+    if current_user.rol_plataforma.value != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Se requieren privilegios de administrador para esta operación"
+        )
+    
+    # Verificar si el usuario a actualizar existe
+    db_usuario = crud.get_usuario(db, usuario_id=usuario_id)
+    if db_usuario is None:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    # Actualizar el usuario
+    updated_usuario = crud.update_usuario(db=db, usuario_id=usuario_id, usuario_update=usuario_update)
+    return updated_usuario
+
+@router.delete("/{usuario_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_usuario(
+    usuario_id: int, 
+    db: Session = Depends(get_db),
+    current_user: schemas.Usuario = Depends(get_current_user)
+):
+    # Verificar si el usuario actual es administrador
+    if current_user.rol_plataforma.value != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Se requieren privilegios de administrador para esta operación"
+        )
+    
+    # Verificar si el usuario a eliminar existe
+    db_usuario = crud.get_usuario(db, usuario_id=usuario_id)
+    if db_usuario is None:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    # No permitir eliminar al propio usuario
+    if db_usuario.id == current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No puedes eliminar tu propio usuario"
+        )
+    
+    # Eliminar el usuario
+    result = crud.delete_usuario(db=db, usuario_id=usuario_id)
+    
+    # Si por alguna razón no se pudo eliminar
+    if not result:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="No se pudo eliminar el usuario"
+        )
