@@ -47,10 +47,11 @@ html, body, #app, .v-application, .v-application__wrap {
 /* Ajustar espacio para el menú lateral */
 .v-navigation-drawer + .v-main {
   padding-left: var(--v-navigation-drawer-width, 256px);
-  transition: padding 0.2s;
+  transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* Cuando el menú está en modo mini */
 .v-navigation-drawer--rail + .v-main {
-  padding-left: var(--v-navigation-drawer-rail-width, 56px);
+  padding-left: var(--v-navigation-drawer-rail-width, 68px);
+  transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>
