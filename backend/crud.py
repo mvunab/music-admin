@@ -41,7 +41,7 @@ def create_usuario(db: Session, usuario: schemas.UsuarioCreate):
         nombre=usuario.nombre, 
         password_hash=hashed_password,
         creado_en=datetime.now(timezone.utc), # Establecer creado_en explícitamente
-        rol_plataforma=usuario.rol_plataforma
+        is_admin=usuario.is_admin if hasattr(usuario, 'is_admin') else False
     )
     db.add(db_usuario)
     db.commit()

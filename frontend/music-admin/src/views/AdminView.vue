@@ -46,12 +46,12 @@
                 >
                   <template v-slot:item.es_admin="{ item }">
                     <v-chip
-                      :color="item.rol_plataforma === 'admin' ? 'success' : 'default'"
+                      :color="item.es_admin ? 'success' : 'default'"
                       size="small"
                       class="text-capitalize"
                       variant="outlined"
                     >
-                      {{ item.rol_plataforma === 'admin' ? 'Administrador' : 'Usuario' }}
+                      {{ item.es_admin ? 'Administrador' : 'Usuario' }}
                     </v-chip>
                   </template>
                   <template v-slot:item.actions="{ item }">
@@ -68,7 +68,7 @@
                         </v-btn>
                       </template>
                     </v-tooltip>
-                    <v-tooltip text="Asignar como Administrador" v-if="item.rol_plataforma !== 'admin'">
+                    <v-tooltip text="Asignar como Administrador" v-if="!item.es_admin">
                       <template v-slot:activator="{ props }">
                         <v-btn
                           v-bind="props"
@@ -185,14 +185,14 @@
         <v-card-text class="pa-4">
           <v-form ref="userForm" v-model="userFormValid" @submit.prevent="guardarUsuario">
             <v-text-field
-              v-model="userFormData.nombre"
+              v-model="userForm.nombre"
               label="Nombre completo"
               :rules="[v => !!v || 'El nombre es requerido']"
               required
             ></v-text-field>
             
             <v-text-field
-              v-model="userFormData.email"
+              v-model="userForm.email"
               label="Email"
               type="email"
               :rules="[
@@ -204,7 +204,7 @@
             
             <v-text-field
               v-if="!editingUser"
-              v-model="userFormData.password"
+              v-model="userForm.password"
               label="Contraseña"
               type="password"
               :rules="[v => !!v || 'La contraseña es requerida', v => v.length >= 6 || 'Mínimo 6 caracteres']"
@@ -212,13 +212,11 @@
             ></v-text-field>
             
             <v-switch
-              v-model="userFormData.rol_plataforma"
+              v-model="userForm.es_admin"
               color="success"
               label="Otorgar permisos de administrador"
               hint="El usuario podrá gestionar todos los usuarios del sistema"
               persistent-hint
-              :true-value="'admin'"
-              :false-value="'regular'"
             ></v-switch>
           </v-form>
         </v-card-text>
@@ -249,19 +247,19 @@
         <v-card-text class="pa-4">
           <v-form ref="integranteForm" v-model="integranteFormValid" @submit.prevent="guardarIntegrante">
             <v-text-field
-              v-model="integranteFormData.nombre"
+              v-model="integranteForm.nombre"
               label="Nombre del integrante"
               :rules="[v => !!v || 'El nombre es requerido']"
               required
             ></v-text-field>
             
             <v-text-field
-              v-model="integranteFormData.apodo"
+              v-model="integranteForm.apodo"
               label="Apodo (opcional)"
             ></v-text-field>
             
             <v-select
-              v-model="integranteFormData.id_usuario"
+              v-model="integranteForm.id_usuario"
               :items="usuarios"
               item-title="nombre"
               item-value="id"
@@ -276,7 +274,7 @@
             </v-select>
             
             <v-autocomplete
-              v-model="integranteFormData.roles"
+              v-model="integranteForm.roles"
               :items="roles"
               item-title="nombre"
               item-value="id"
@@ -355,7 +353,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import authService from '@/services/authService';
 import usuariosService from '@/services/usuariosService';
@@ -392,15 +390,15 @@ const confirmMessage = ref('');
 const deleteCallback = ref(null);
 
 // Estado para formularios
-const userFormData = ref({
+const userForm = ref({
   id: null,
   nombre: '',
   email: '',
   password: '',
-  rol_plataforma: 'regular'
+  es_admin: false
 });
 
-const integranteFormData = ref({
+const integranteForm = ref({
   id: null,
   nombre: '',
   apodo: '',
@@ -410,8 +408,8 @@ const integranteFormData = ref({
 
 const userFormValid = ref(false);
 const integranteFormValid = ref(false);
-const userForm = ref(null);
-const integranteForm = ref(null);
+const userFormRef = ref(null);
+const integranteFormRef = ref(null);
 
 // Estado para notificaciones
 const snackbar = ref({
@@ -424,7 +422,7 @@ const snackbar = ref({
 const usuariosHeaders = [
   { title: 'Nombre', key: 'nombre' },
   { title: 'Email', key: 'email' },
-  { title: 'Rol', key: 'es_admin' },  // Mantenemos la key pero mostramos rol_plataforma
+  { title: 'Rol', key: 'es_admin' },
   { title: 'Acciones', key: 'actions', sortable: false, align: 'end' }
 ];
 
@@ -460,7 +458,7 @@ onMounted(async () => {
   // Verificar si el usuario es administrador
   try {
     const currentUser = await authService.getCurrentUser();
-    if (currentUser.data.rol_plataforma !== 'admin') {
+    if (!currentUser.data.es_admin) {
       mostrarNotificacion('No tienes permiso para acceder a esta sección', 'error');
       router.push('/calendar');
       return;
@@ -519,12 +517,12 @@ async function cargarRoles() {
 // Métodos para usuarios
 function editarUsuario(usuario) {
   editingUser.value = usuario;
-  userFormData.value = {
+  userForm.value = {
     id: usuario.id,
     nombre: usuario.nombre,
     email: usuario.email,
     password: '',  // No se pide la contraseña al editar
-    rol_plataforma: usuario.rol_plataforma
+    es_admin: usuario.es_admin
   };
   showUserDialog.value = true;
 }
@@ -534,19 +532,19 @@ async function guardarUsuario() {
   try {
     if (editingUser.value) {
       // Actualizar usuario existente
-      await usuariosService.updateUsuario(userFormData.value.id, {
-        nombre: userFormData.value.nombre,
-        email: userFormData.value.email,
-        rol_plataforma: userFormData.value.rol_plataforma
+      await usuariosService.updateUsuario(userForm.value.id, {
+        nombre: userForm.value.nombre,
+        email: userForm.value.email,
+        es_admin: userForm.value.es_admin
       });
       mostrarNotificacion('Usuario actualizado con éxito', 'success');
     } else {
       // Crear nuevo usuario
       await usuariosService.createUsuario({
-        nombre: userFormData.value.nombre,
-        email: userFormData.value.email,
-        password: userFormData.value.password,
-        rol_plataforma: userFormData.value.rol_plataforma
+        nombre: userForm.value.nombre,
+        email: userForm.value.email,
+        password: userForm.value.password,
+        es_admin: userForm.value.es_admin
       });
       mostrarNotificacion('Usuario creado con éxito', 'success');
     }
@@ -564,12 +562,12 @@ async function guardarUsuario() {
 }
 
 function resetUserForm() {
-  userFormData.value = {
+  userForm.value = {
     id: null,
     nombre: '',
     email: '',
     password: '',
-    rol_plataforma: 'regular'
+    es_admin: false
   };
   editingUser.value = null;
 }
@@ -577,7 +575,7 @@ function resetUserForm() {
 async function convertirAdmin(usuario) {
   try {
     await usuariosService.updateUsuario(usuario.id, {
-      rol_plataforma: 'admin'
+      es_admin: true
     });
     mostrarNotificacion(`${usuario.nombre} ahora es administrador`, 'success');
     await cargarUsuarios();
@@ -605,7 +603,7 @@ function confirmarEliminarUsuario(usuario) {
 // Métodos para integrantes
 function editarIntegrante(integrante) {
   editingIntegrante.value = integrante;
-  integranteFormData.value = {
+  integranteForm.value = {
     id: integrante.id,
     nombre: integrante.nombre,
     apodo: integrante.apodo || '',
@@ -620,20 +618,20 @@ async function guardarIntegrante() {
   try {
     if (editingIntegrante.value) {
       // Actualizar integrante existente
-      await integrantesService.updateIntegrante(integranteFormData.value.id, {
-        nombre: integranteFormData.value.nombre,
-        apodo: integranteFormData.value.apodo,
-        id_usuario: integranteFormData.value.id_usuario,
-        roles: integranteFormData.value.roles
+      await integrantesService.updateIntegrante(integranteForm.value.id, {
+        nombre: integranteForm.value.nombre,
+        apodo: integranteForm.value.apodo,
+        id_usuario: integranteForm.value.id_usuario,
+        roles: integranteForm.value.roles
       });
       mostrarNotificacion('Integrante actualizado con éxito', 'success');
     } else {
       // Crear nuevo integrante
       await integrantesService.createIntegrante({
-        nombre: integranteFormData.value.nombre,
-        apodo: integranteFormData.value.apodo,
-        id_usuario: integranteFormData.value.id_usuario,
-        roles: integranteFormData.value.roles
+        nombre: integranteForm.value.nombre,
+        apodo: integranteForm.value.apodo,
+        id_usuario: integranteForm.value.id_usuario,
+        roles: integranteForm.value.roles
       });
       mostrarNotificacion('Integrante creado con éxito', 'success');
     }
@@ -651,7 +649,7 @@ async function guardarIntegrante() {
 }
 
 function resetIntegranteForm() {
-  integranteFormData.value = {
+  integranteForm.value = {
     id: null,
     nombre: '',
     apodo: '',

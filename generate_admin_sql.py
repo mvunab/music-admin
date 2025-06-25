@@ -21,6 +21,7 @@ def get_password_hash(password):
 nombre = "David Marin"
 email = "david.marin@example.com"
 password = "david123"
+is_admin = True
 
 # Generar hash de la contraseña
 password_hash = get_password_hash(password)
@@ -28,12 +29,13 @@ password_hash = get_password_hash(password)
 # Generar SQL
 sql = f"""
 -- SQL para insertar un usuario administrador
-INSERT INTO usuarios (nombre, email, password_hash, rol_plataforma, creado_en) 
+INSERT INTO usuarios (nombre, email, password_hash, rol_plataforma, is_admin, creado_en) 
 VALUES (
     '{nombre}', 
     '{email}', 
     '{password_hash}', 
     'admin', 
+    {1 if is_admin else 0}, 
     NOW()
 );
 """

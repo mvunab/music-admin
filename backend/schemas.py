@@ -96,6 +96,7 @@ class UsuarioBase(BaseModel):
     email: EmailStr
     rol_plataforma: Optional[RolUsuarioEnum] = RolUsuarioEnum.regular
     integrante_id: Optional[int] = None
+    is_admin: Optional[bool] = False
 
 class UsuarioCreate(UsuarioBase):
     password: str # La contraseña se enviará en la creación, pero no se devolverá
@@ -128,6 +129,7 @@ class UsuarioSimple(BaseModel):
     nombre: str
     email: EmailStr
     rol_plataforma: RolUsuarioEnum
+    is_admin: bool = False
 
     class Config:
         from_attributes = True

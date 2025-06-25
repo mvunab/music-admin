@@ -21,6 +21,8 @@ class Usuario(Base):
     creado_en = Column(DateTime(timezone=True), server_default=func.now())
     # Rol del usuario en la plataforma (admin o regular)
     rol_plataforma = Column(Enum(RolUsuario), default=RolUsuario.regular)
+    # Campo explícito para permisos de administrador
+    is_admin = Column(Boolean, default=False)
     # Relación con integrante (un usuario puede ser un integrante de la banda)
     integrante_id = Column(mysql.INTEGER(unsigned=True), ForeignKey("integrantes.id"), nullable=True)
     integrante = relationship("Integrante", back_populates="usuario")
