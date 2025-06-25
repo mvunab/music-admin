@@ -87,11 +87,17 @@ export default {
   
   async isAdmin() {
     try {
+      // Primero intentar obtener del endpoint
       const response = await this.getCurrentUser();
-      return response.data.is_admin === true;
+      console.log('isAdmin: Verificando desde respuesta API:', response.data);
+      return response.data.rol_plataforma === 'admin';
     } catch (error) {
-      console.error('Error verificando si el usuario es administrador:', error);
-      return false;
+      console.error('isAdmin: Error verificando si el usuario es administrador desde API:', error);
+      
+      // Si falla, intentar verificar desde el token JWT como respaldo
+      const isAdminFromToken = verificarAdmin();
+      console.log('isAdmin: Verificación desde token JWT:', isAdminFromToken);
+      return isAdminFromToken;
     }
   },
 };

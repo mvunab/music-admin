@@ -41,7 +41,7 @@ def update_usuario(
     current_user: schemas.Usuario = Depends(get_current_user)
 ):
     # Verificar si el usuario actual es administrador
-    if not current_user.is_admin:
+    if current_user.rol_plataforma.value != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Se requieren privilegios de administrador para esta operación"
@@ -63,7 +63,7 @@ def delete_usuario(
     current_user: schemas.Usuario = Depends(get_current_user)
 ):
     # Verificar si el usuario actual es administrador
-    if not current_user.is_admin:
+    if current_user.rol_plataforma.value != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Se requieren privilegios de administrador para esta operación"

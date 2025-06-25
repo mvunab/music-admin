@@ -51,7 +51,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     access_token = create_access_token(
         data={
             "sub": user.email,
-            "is_admin": user.is_admin  # Incluir información de admin en el token
+            "is_admin": user.rol_plataforma.value == "admin"  # Usar rol_plataforma en lugar de is_admin
         }, 
         expires_delta=access_token_expires
     )
