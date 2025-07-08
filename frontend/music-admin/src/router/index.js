@@ -11,6 +11,7 @@ const PlanDomingoView = () => import("../views/PlanDomingoView.vue");
 const RepertorioView = () => import("../views/RepertorioView.vue");
 const SongSheetView = () => import("../views/SongSheetView.vue"); 
 const AdminView = () => import("../views/AdminView.vue"); 
+const RolesMusicalesView = () => import("../views/RolesMusicalesView.vue");
 
 const routes = [
   {
@@ -58,6 +59,15 @@ const routes = [
       title: "Administración de Usuarios", 
       requiresAuth: true,
       requiresAdmin: true 
+    },
+  },
+  {
+    path: "/roles-musicales",
+    name: "RolesMusicales",
+    component: RolesMusicalesView,
+    meta: { 
+      title: "Roles Musicales", 
+      requiresAuth: true 
     },
   },
   {

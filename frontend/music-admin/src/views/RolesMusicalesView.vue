@@ -148,7 +148,7 @@ export default {
     async cargarRolesMusicales() {
       this.cargando = true;
       try {
-        const response = await rolesService.getAll();
+        const response = await rolesService.getRoles();
         this.rolesMusicales = response.data;
       } catch (error) {
         this.mostrarMensaje('Error al cargar roles musicales: ' + error.message, 'error');
@@ -177,11 +177,11 @@ export default {
       try {
         if (this.modoEdicion) {
           // Actualizar
-          await rolesService.update(this.rolActual.id, this.rolActual);
+          await rolesService.updateRol(this.rolActual.id, this.rolActual);
           this.mostrarMensaje('Rol musical actualizado correctamente', 'success');
         } else {
           // Crear nuevo
-          await rolesService.create(this.rolActual);
+          await rolesService.createRol(this.rolActual);
           this.mostrarMensaje('Rol musical creado correctamente', 'success');
         }
         
@@ -200,7 +200,7 @@ export default {
     
     async eliminarRolMusical() {
       try {
-        await rolesService.delete(this.rolAEliminar.id);
+        await rolesService.deleteRol(this.rolAEliminar.id);
         this.mostrarMensaje('Rol musical eliminado correctamente', 'success');
         this.cargarRolesMusicales();
       } catch (error) {
