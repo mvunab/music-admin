@@ -8,12 +8,7 @@
 
           <!-- Botones solo en md+ -->
           <div class="d-none d-md-flex ga-2 flex-wrap">
-            <v-btn to="/plan-domingo" color="secondary" variant="outlined" prepend-icon="mdi-calendar-edit">
-              Planificar Domingo
-            </v-btn>
-            <v-btn to="/repertorio" color="info" variant="outlined" prepend-icon="mdi-music-box-multiple-outline">
-              Repertorio
-            </v-btn>
+
             <v-btn @click="logout" color="primary" variant="flat" prepend-icon="mdi-logout">
               Cerrar Sesión
             </v-btn>
