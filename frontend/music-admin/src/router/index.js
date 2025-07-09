@@ -12,6 +12,7 @@ const RepertorioView = () => import("../views/RepertorioView.vue");
 const SongSheetView = () => import("../views/SongSheetView.vue"); 
 const AdminView = () => import("../views/AdminView.vue"); 
 const RolesMusicalesView = () => import("../views/RolesMusicalesView.vue");
+const IntegrantesView = () => import("../views/IntegrantesView.vue");
 
 const routes = [
   {
@@ -36,7 +37,11 @@ const routes = [
     path: "/plan-domingo",
     name: "PlanDomingo",
     component: PlanDomingoView,
-    meta: { title: "Planificar Domingo", requiresAuth: true },
+    meta: { 
+      title: "Planificar Domingo", 
+      requiresAuth: true,
+      requiresAdmin: true
+    },
   },
   {
     path: "/repertorio",
@@ -67,7 +72,18 @@ const routes = [
     component: RolesMusicalesView,
     meta: { 
       title: "Roles Musicales", 
-      requiresAuth: true 
+      requiresAuth: true,
+      requiresAdmin: true 
+    },
+  },
+  {
+    path: "/integrantes",
+    name: "Integrantes",
+    component: IntegrantesView,
+    meta: { 
+      title: "Integrantes de la Banda", 
+      requiresAuth: true,
+      requiresAdmin: true 
     },
   },
   {

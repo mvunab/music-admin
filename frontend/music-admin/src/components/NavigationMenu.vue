@@ -174,7 +174,8 @@ const menuItems = [
   {
     title: 'Planificar Domingo',
     path: '/plan-domingo',
-    icon: 'mdi-church'
+    icon: 'mdi-church',
+    requiresAdmin: true
   },
   {
     title: 'Repertorio',
@@ -182,14 +183,10 @@ const menuItems = [
     icon: 'mdi-music'
   },
   {
-    title: 'Integrantes',
-    path: '/integrantes',
-    icon: 'mdi-account-group'
-  },
-  {
     title: 'Roles Musicales',
     path: '/roles-musicales',
-    icon: 'mdi-microphone'
+    icon: 'mdi-microphone',
+    requiresAdmin: true
   },
   {
     title: 'Administración',
@@ -202,9 +199,14 @@ const menuItems = [
 
 // Filtrar elementos del menú
 const filteredMenuItems = computed(() => {
-  // Filtrar los elementos del menú, excluyendo el de Administración 
-  // ya que ahora tenemos un botón específico para eso
-  return menuItems.filter(item => !item.requiresAdmin);
+  // Si el usuario es administrador, mostrar todos excepto el botón de Administración
+  // (ya que tenemos un botón específico para eso)
+  if (isAdmin.value) {
+    return menuItems.filter(item => !item.requiresAdmin || item.title !== 'Administración');
+  } else {
+    // Para usuarios regulares, solo mostrar Calendario y Repertorio
+    return menuItems.filter(item => !item.requiresAdmin);
+  }
 });
 
 // Funciones
