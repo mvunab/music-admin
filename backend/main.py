@@ -37,7 +37,8 @@ app = FastAPI(
     title="API Gestión de Banda",
     description="API para gestionar usuarios, roles, repertorio de canciones y planificación de ensayos.",
     version="0.1.0",
-    lifespan=lifespan 
+    lifespan=lifespan ,
+    debug=True
 )
 
 # Configuración de CORS
