@@ -24,7 +24,7 @@
     </transition>
 
     <v-list-item
-      prepend-avatar="https://randomuser.me/api/portraits/men/78.jpg"
+      prepend-avatar="https://scontent-scl2-1.xx.fbcdn.net/v/t39.30808-6/347824368_143649812030424_8457102618182306856_n.png?_nc_cat=101&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeFtRj3QX2p4f3QQyztnXoId3Lxnt0p7TlfcvGe3SntOVwTwgWh_q-0MvCMmdiPRHEs&_nc_ohc=RY2VSa6naHkQ7kNvwH_Jn0Y&_nc_oc=AdkDBhU1arwpTipOHI1rDAwMwO02Ge-yjS15AXmkAo6CnwrOV47Z_9D6mEHPRr-r5BI&_nc_zt=23&_nc_ht=scontent-scl2-1.xx&_nc_gid=b4HoU5IhaiqVndv2n2JQkw&oh=00_AfTdjvDhgEST-ZqxVMCXXlNjWpPvhu2jZSA_SGYy7Omy9A&oe=6875F6B8"
       :title="usuario ? usuario.nombre : 'Usuario'"
       :subtitle="isAdmin ? 'Administrador' : ''"
       :subtitle-class="{ 'text-success': isAdmin }"
@@ -50,11 +50,11 @@
     <v-divider></v-divider>
 
     <!-- Mostrar botón especial de Administración cuando el usuario es admin -->
-    <div v-if="isAdmin" :class="miniVariant ? 'py-3 text-center' : 'px-2 py-3'">
+    <div v-if="isAdmin" :class="miniVariant ? 'py-3 text-center' : 'px-0 py-3'">
       <v-tooltip
         v-if="miniVariant"
         location="right"
-        :text="route.path === '/admin' ? 'Volver al Calendario' : 'Panel de Administración'"
+        :text="route.path === '/admin' ? 'Volver al Calendario' : 'Panel de Administrador'"
       >
         <template v-slot:activator="{ props }">
           <v-btn
@@ -82,7 +82,7 @@
         :to="route.path === '/admin' ? '/calendar' : '/admin'"
         class="mb-2 font-weight-medium"
       >
-        {{ route.path === '/admin' ? 'Volver al Calendario' : 'Panel de Administración' }}
+        {{ route.path === '/admin' ? 'Volver al Calendario' : 'Panel de Administrador' }}
       </v-btn>
       <v-divider class="my-2"></v-divider>
     </div>
