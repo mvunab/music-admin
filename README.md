@@ -1,150 +1,67 @@
-# Sistema de Gestión de Banda
+## Ejecución con Docker
 
-Este proyecto es una aplicación full-stack para gestionar información musical y asignaciones de una banda, construida con FastAPI (backend) y Vue.js (frontend).
+Este proyecto incluye configuración completa para ejecutarse con Docker y Docker Compose, facilitando el despliegue tanto en desarrollo como en producción.
 
-## Características Implementadas
+### Requisitos Específicos
 
-- ✅ Autenticación JWT completa
-- ✅ Gestión de usuarios y roles
-- ✅ Sistema de repertorio musical con:
-  - Gestión de canciones (título, categoría, tonalidad)
-  - Transposición de acordes
-  - Vista de partitura/letra con acordes
-  - Impresión de partituras
-- ✅ Integración con MongoDB para el repertorio
-- ✅ Integración con MySQL para usuarios y roles
-- ✅ Interfaz moderna con Vuetify
-- ✅ Rutas protegidas en frontend y backend
+- **Backend:** Python 3.9 (imagen `python:3.9-slim`)
+- **Frontend:** Node.js 22.14.0 y pnpm 10.4.1 (ver Dockerfile)
+- **Bases de datos:** MySQL y MongoDB (imágenes oficiales)
 
-## Tecnologías
+### Variables de Entorno
 
-### Backend
+Asegúrate de definir las siguientes variables en los archivos `.env` correspondientes:
 
-- FastAPI
-- SQLAlchemy (MySQL)
-- PyMongo/Motor (MongoDB)
-- JWT para autenticación
-
-### Frontend
-
-- Vue 3
-- Vuetify
-- Vue Router
-- Axios
-- Chord-transposer
-
-## Prerrequisitos
-
-- Python 3.9+
-- Node.js y npm
-- MySQL Server
-- MongoDB Atlas (cuenta configurada)
-
-## Configuración del Entorno
-
-1. **Clonar el repositorio:**
-
-   ```bash
-   git clone https://github.com/tu-usuario/music-admin.git
-   cd music-admin
-   ```
-
-2. **Backend (FastAPI)**
-
-   ```bash
-   # Crear y activar entorno virtual
-   python -m venv venv
-   # Windows:
-   .\venv\Scripts\activate
-   # Linux/Mac:
-   source venv/bin/activate
-
-   # Instalar dependencias
-   cd backend
-   pip install -r requirements.txt
-   ```
-
-3. **Frontend (Vue.js)**
-
-   ```bash
-   cd frontend/music-admin
-   npm install
-   ```
-
-4. **Variables de Entorno**
-
-   Backend (.env):
-
-   ```env
-   DATABASE_URL="mysql+pymysql://usuario:contraseña@localhost:3306/banda_db"
-   SECRET_KEY="tu_clave_secreta_para_jwt"
-   ALGORITHM="HS256"
-   ACCESS_TOKEN_EXPIRE_MINUTES=30
-   MONGODB_URI="tu_uri_de_mongodb_atlas"
-   ```
-
-   Frontend (.env):
-
-   ```env
-   VITE_API_URL=http://127.0.0.1:8000
-   ```
-
-## Ejecutar la Aplicación
-
-1. **Iniciar Backend:**
-
-   ```bash
-   # Desde /backend
-   uvicorn main:app --reload
-   ```
-
-2. **Iniciar Frontend:**
-   ```bash
-   # Desde /frontend/music-admin
-   npm run dev
-   ```
-
-La aplicación estará disponible en:
-
-- Frontend: `http://localhost:5173`
-- Backend API: `http://localhost:8000`
-- API Docs: `http://localhost:8000/docs`
-
-## Estructura del Proyecto
-
-```
-music-admin/
-├── backend/
-│   ├── routers/           # Endpoints de la API
-│   ├── models.py          # Modelos SQLAlchemy
-│   ├── schemas.py         # Esquemas Pydantic
-│   ├── crud.py           # Operaciones de base de datos
-│   └── main.py           # Aplicación FastAPI
-├── frontend/
-│   └── music-admin/
-│       ├── src/
-│       │   ├── views/    # Componentes de página
-│       │   ├── components/# Componentes reutilizables
-│       │   ├── services/ # Servicios API
-│       │   └── router/   # Configuración de rutas
-│       └── package.json
-└── README.md
+**Backend (`backend/.env`):**
+```env
+DATABASE_URL="mysql+pymysql://usuario:contrasena@mysql-db:3306/banda_db"
+SECRET_KEY="tu_clave_secreta_para_jwt"
+ALGORITHM="HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+MONGODB_URI="mongodb://root:example@mongo-db:27017/banda_db"
 ```
 
-## Desarrollo
+**Frontend (`frontend/music-admin/.env`):**
+```env
+VITE_API_URL=http://127.0.0.1:8000
+```
 
-### Endpoints API Principales
+**Bases de datos:**
+- MySQL: credenciales y nombre de base de datos configurados en `docker-compose.yml` (modifica para producción)
+- MongoDB: usuario `root`, contraseña `example`, base de datos `banda_db` (modifica para producción)
 
-- `POST /api/v1/auth/token` - Login
-- `GET /api/v1/auth/users/me` - Usuario actual
-- `GET /api/v1/songs` - Listar canciones
-- `POST /api/v1/songs` - Crear canción
-- `GET /api/v1/songs/{id}` - Detalles de canción
+### Puertos Expuestos
 
-### Rutas Frontend Principales
+- **Backend (FastAPI):** `8000` (API y documentación)
+- **Frontend (Vite Preview):** `4173`
+- **MySQL:** `3306`
+- **MongoDB:** `27017`
 
-- `/` - Login
-- `/register` - Registro
-- `/calendar` - Calendario de banda
-- `/repertorio` - Gestión de repertorio
-- `/song/{id}` - Vista de canción
+### Instrucciones de Uso
+
+1. **Construir y levantar los servicios:**
+
+   ```bash
+   docker compose up --build
+   ```
+
+   Esto iniciará los siguientes contenedores:
+   - `python-backend`: API FastAPI en `http://localhost:8000`
+   - `javascript-music-admin`: Frontend Vue en `http://localhost:4173`
+   - `mysql-db`: Base de datos MySQL
+   - `mongo-db`: Base de datos MongoDB
+
+2. **Configuración especial:**
+   - Los servicios se comunican en la red interna `music-admin-net`.
+   - Los datos de MySQL y MongoDB se persisten en volúmenes locales (`mysql-data`, `mongo-data`).
+   - Para desarrollo, puedes usar los archivos `.env.example` como referencia.
+   - Cambia todas las contraseñas y claves secretas antes de usar en producción.
+
+3. **Acceso a la aplicación:**
+   - **Frontend:** `http://localhost:4173`
+   - **Backend API:** `http://localhost:8000`
+   - **Documentación API:** `http://localhost:8000/docs`
+
+> **Nota:** Si modificas los archivos `.env`, reinicia los contenedores para aplicar los cambios.
+
+---

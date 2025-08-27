@@ -1,43 +1,17 @@
-# Archivos y directorios generales a ignorar
-.git
-.gitignore
-.DS_Store
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-**/.vscode
-**/.idea
-**/node_modules
 **/__pycache__
 **/*.pyc
 **/*.pyo
 **/*.pyd
-**/.pytest_cache
+**/.Python
+**/.env
+**/.venv
+**/venv
+**/ENV
 **/.coverage
 **/htmlcov
-
-# Archivos específicos del frontend
-frontend/music-admin/node_modules
-frontend/music-admin/dist
-frontend/music-admin/npm-debug.log*
-frontend/music-admin/yarn-debug.log*
-frontend/music-admin/yarn-error.log*
-frontend/music-admin/pnpm-debug.log*
-
-# Archivos específicos del backend
-backend/__pycache__/
-backend/**/__pycache__/
-backend/venv/
+**/.pytest_cache
+**/.idea
 **/*.log
-
-# Archivos de Docker
-Dockerfile*
-docker-compose.yml
-.dockerignore
-
-# Otros archivos
-README.md
-CHANGELOG.md
-LICENSE
+**/node_modules
+**/.git
+**/.DS_Store
