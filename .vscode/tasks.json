@@ -1,0 +1,104 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Setup Music Admin",
+            "type": "shell",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Show Welcome Message",
+                "Setup Virtual Environment", 
+                "Install Dependencies",
+                "Check Database",
+                "Start Backend and Frontend"
+            ],
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
+        },
+        {
+            "label": "Show Welcome Message",
+            "type": "shell",
+            "command": "echo [Setup] Iniciando configuración del proyecto Music Admin... && echo.",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Setup Virtual Environment",
+            "type": "shell",
+            "command": "echo [venv] Verificando entorno virtual... && if not exist backend\\venv (echo [venv] Creando nuevo entorno virtual... && python -m venv backend\\venv && echo [venv] ✅ Entorno virtual creado) else (echo [venv] ✅ Entorno virtual existente) && echo [venv] Activando entorno... && .\\backend\\venv\\Scripts\\activate && echo [venv] ✅ Entorno activado",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Install Dependencies",
+            "type": "shell",
+            "dependsOrder": "parallel",
+            "dependsOn": [
+                "Install Backend Dependencies",
+                "Install Frontend Dependencies"
+            ]
+        },
+        {
+            "label": "Install Backend Dependencies",
+            "type": "shell",
+            "command": "echo [pip] Instalando dependencias del backend... && .\\backend\\venv\\Scripts\\activate && pip install -r backend\\requirements.txt && echo [pip] ✅ Dependencias del backend instaladas",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Install Frontend Dependencies", 
+            "type": "shell",
+            "command": "echo [pnpm] Verificando y actualizando pnpm... && pnpm self-update && echo [pnpm] Instalando dependencias del frontend... && cd frontend\\music-admin && echo Y | pnpm install && echo [pnpm] ✅ Dependencias del frontend instaladas",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Check Database",
+            "type": "shell",
+            "command": "echo [DB] Verificando estructura de base de datos... && .\\backend\\venv\\Scripts\\activate && cd backend\\utils && python check_database.py && if %ERRORLEVEL% NEQ 0 (echo [DB] Aplicando migraciones... && cd .. && alembic upgrade head && echo [DB] ✅ Migraciones aplicadas) else (echo [DB] ✅ Base de datos al día)",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Start Backend and Frontend",
+            "dependsOrder": "parallel",
+            "dependsOn": [
+                "Start Backend",
+                "Start Frontend"
+            ]
+        },
+        {
+            "label": "Start Backend",
+            "type": "shell",
+            "command": "echo [Server] Iniciando servidor FastAPI... && .\\backend\\venv\\Scripts\\activate && echo [Server] ✅ Backend listo en http://localhost:8000 && uvicorn backend.main:app --reload",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "group": "servers"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Start Frontend",
+            "type": "shell",
+            "command": "echo [Frontend] Iniciando servidor de desarrollo Vue... && cd frontend\\music-admin && echo [Frontend] ✅ Frontend listo en http://localhost:5173 && pnpm dev",
+            "presentation": {
+                "reveal": "always", 
+                "panel": "dedicated",
+                "group": "servers"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

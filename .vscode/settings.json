@@ -1,3 +1,8 @@
 {
-    "postman.settings.dotenv-detection-notification-visibility": false
+    "postman.settings.dotenv-detection-notification-visibility": false,
+    "python.defaultInterpreterPath": "${workspaceFolder}/backend/venv/Scripts/python.exe",
+    "python.terminal.activateEnvironment": true,
+    "task.allowAutomaticTasks": "on",
+    "workbench.startupEditor": "none",
+    "terminal.integrated.defaultProfile.windows": "Command Prompt"
 }

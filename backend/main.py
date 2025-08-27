@@ -43,7 +43,13 @@ app = FastAPI(
 
 # Configuración de CORS
 origins = [
-    os.getenv("FRONTEND_URL_1", "http://localhost:5173"), # URL de Vite por defecto
+    "http://localhost:5173",      # Vite dev server
+    "http://127.0.0.1:5173",      # Vite dev server (IP)
+    "http://localhost:4173",      # Vite preview
+    "http://127.0.0.1:4173",      # Vite preview (IP)
+    "http://localhost:3000",      # Desarrollo alternativo
+    "http://127.0.0.1:3000",      # Desarrollo alternativo (IP)
+    os.getenv("FRONTEND_URL_1", "http://localhost:5173"),
     os.getenv("FRONTEND_URL_2", "http://127.0.0.1:5173"),
 ]
 
@@ -51,8 +57,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"], # Permite GET, POST, PUT, DELETE, etc.
-    allow_headers=["*"], # Permite todas las cabeceras
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["*"],
 )
 
 # --- Incluir Routers ---

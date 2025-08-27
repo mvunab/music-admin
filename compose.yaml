@@ -38,9 +38,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: Pastel.123
       MYSQL_DATABASE: banda_db
-      # Remove these lines since we're using root user
-      # MYSQL_USER: root
-      # MYSQL_PASSWORD: Pastel.123
+      
     ports:
       - "3307:3306"
     volumes:

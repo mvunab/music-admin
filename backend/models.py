@@ -45,7 +45,7 @@ class RolMusical(Base):
     id = Column(mysql.INTEGER(unsigned=True), primary_key=True, index=True) 
     nombre = Column(mysql.VARCHAR(50), unique=True, nullable=False)
     # Integrantes que tienen este rol de forma permanente
-    integrantes = relationship("Integrante", secondary="integrantes_roles")
+    integrantes = relationship("Integrante", secondary="integrantes_roles", overlaps="roles_musicales")
     # Asignaciones para domingos específicos
     asignaciones = relationship("Asignacion", back_populates="rol_musical")
 
